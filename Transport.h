@@ -1,14 +1,18 @@
-/**************************************************************************
-* Copyright (c) 2012-2022, Tencent Tech. Co., Ltd. All rights reserved.
-*
-* File name:          Transport.h
-* Author:             linfengchen
-* Version:            1.0
-* Date:               2016.11.8
-* Description:        ÍøÂç´«ÊäÊµÏÖ
-* History:
-*                     2016.11.8
-**************************************************************************/
+/**
+ * Tencent is pleased to support the open source community by making Tars available.
+ *
+ * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
+ *
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * https://opensource.org/licenses/BSD-3-Clause
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed 
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ * specific language governing permissions and limitations under the License.
+ */
 #ifndef _TRANSPORT_H_
 #define _TRANSPORT_H_
 
@@ -154,39 +158,6 @@ namespace bm
         int         _timeout;
         int         _istcp;
     };
-
-    typedef struct tagMsgItem
-    {
-        int         uniqId;
-        int64_t     sendTime;
-        char*       bufPtr;
-        int         bufLen;
-    } MsgItem;
-
-    inline bool operator==(const MsgItem&l, const MsgItem&r)
-    {
-        return (l.uniqId == r.uniqId);
-    }
-    inline bool operator!=(const MsgItem&l, const MsgItem&r)
-    {
-        return (l.uniqId != r.uniqId);
-    }
-    inline bool operator<(const MsgItem&l, const MsgItem&r)
-    {
-        return (l.uniqId < r.uniqId);
-    }
-    inline bool operator<=(const MsgItem&l, const MsgItem&r)
-    {
-        return !(r < l);
-    }
-    inline bool operator>(const MsgItem&l, const MsgItem&r)
-    {
-        return r < l;
-    }
-    inline bool operator>=(const MsgItem&l, const MsgItem&r)
-    {
-        return !(l < r);
-    }
 
     class Transport
     {

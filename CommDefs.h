@@ -1,14 +1,18 @@
-/**************************************************************************
-* Copyright (c) 2012-2022, Tencent Tech. Co., Ltd. All rights reserved.
-*
-* File name:          CommDefs.h
-* Author:             linfengchen
-* Version:            1.0
-* Date:               2016.11.10
-* Description:        通用头文件处理
-* History:
-*                     2016.11.10             首次创建
-**************************************************************************/
+/**
+ * Tencent is pleased to support the open source community by making Tars available.
+ *
+ * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
+ *
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * https://opensource.org/licenses/BSD-3-Clause
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed 
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ * specific language governing permissions and limitations under the License.
+ */
 #ifndef _COMMDEFS_H_
 #define _COMMDEFS_H_
 
@@ -26,7 +30,6 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-//#include <linux/tcp.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <cassert>
@@ -45,9 +48,6 @@
 #include "licote.h"
 using namespace std;
 
-#define CAS(ptr, old, new)({ char ret; __asm__ __volatile__("lock; cmpxchgl %2,%0; setz %1": "+m"(*ptr), "=q"(ret): "r"(new),"a"(old): "memory"); ret;})
-#define WMB() __asm__ __volatile__("sfence":::"memory")
-#define RMB() __asm__ __volatile__("lfence":::"memory")
 
 enum ErrorCode
 {
@@ -316,37 +316,14 @@ inline int64_t getProcNum(void)
     return procNum;
 }
 
-// Percentile finds the relative standing in a slice of floats
-inline double percentile(const vector<double>& input, double percent)
-{
-    size_t len = input.size();
-    if (len == 0)
-    {
-        return -1;
-    }
-
-    if (percent <= 0 || percent > 100)
-    {
-        return -2;
-    }
-
-    // Multiply percent by length of input
-    double index = (percent / 100) * (double)len;
-
-    // Check if the index is a whole number
-    if (index == (double)((int64_t)index)) {
-        return input[(int)index - 1];
-    } else if (index > 1) {
-        // Find the average of the index and following values
-        return (input[(int)index-1] + input[(int)index]) / 2;
-    } else {
-        return -3;
-    }
-}
-
 #define MAX_FD  50001
 #define TNOWMS  (getNow() / 1000)
 #define LICODE_GETINT(x, v) (licote_option_exist(x) ? atoi(licote_option_get(x)) : v)
 #define LICODE_GETSTR(x, v) (licote_option_exist(x) ? trim(licote_option_get(x)) : v)
+
+#define CAS(ptr, old, new)({ char ret; __asm__ __volatile__("lock; cmpxchgl %2,%0; setz %1": "+m"(*ptr), "=q"(ret): "r"(new),"a"(old): "memory"); ret;})
+#define WMB() __asm__ __volatile__("sfence":::"memory")
+#define RMB() __asm__ __volatile__("lfence":::"memory")
+
 #endif // _COMMDEFS_H_
 
