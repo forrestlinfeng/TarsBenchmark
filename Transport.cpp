@@ -96,7 +96,7 @@ namespace bm
         {
             int reqIdx = -1;
             int ret = _proto->decode(_recvBuffer.c_str(), iRecvLen, reqIdx);
-            auto it = _proto->isSupportSeq() ? _sendQueue.begin() : _sendQueue.find(reqIdx);
+            auto it = _proto->isSupportSeq() ? _sendQueue.find(reqIdx) : _sendQueue.begin();
             if (it != _sendQueue.end())
             {
                 Monitor::getInstance()->report(ret, (tCurTime - it->second));

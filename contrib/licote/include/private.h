@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 #ifndef __LICOTE_PRIVATE_H__
 #define __LICOTE_PRIVATE_H__
 
