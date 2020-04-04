@@ -37,11 +37,13 @@ eab专门为tars服务量身订做的无码压测工具，利用epoll和多进�
  6. 3、4、5可以嵌套使用
 
 - **例如**：
+```
 vector<string>|struct<string, int>|map<string, string>
 #######
 <abc, def, tt, fbb>
 <abc, 1>
 [abc=def, dfd=bbb]
+```
 
 ### 压测结果显示
 ![压测结果](docs/image/result.jpg)
