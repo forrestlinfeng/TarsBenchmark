@@ -1029,8 +1029,8 @@ __licote_show_version(void)
 	for(i=0; i<ARRAY_SIZE(g_LicoteL); i++){
 		LICOTE_SHOW("%s\n", g_LicoteL[i]);
 	}
-	LICOTE_SHOW("Licote version: "__LICOTE_VERSION" "__LICOTE_RELEASE"(GPL);\n");
-	LICOTE_SHOW("Copyright (C) 2013 licote@vip.qq.com;\n\n");
+	LICOTE_SHOW("Licote version: "__LICOTE_VERSION" "__LICOTE_RELEASE"(BSD);\n");
+	LICOTE_SHOW("Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.\n\n");
 
 	if (__g_licote_author){
 		LICOTE_SHOW("%s author : %s\n", g_LicoteC.name, __g_licote_author);

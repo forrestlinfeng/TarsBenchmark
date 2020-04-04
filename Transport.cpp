@@ -96,15 +96,11 @@ namespace bm
         {
             int reqIdx = -1;
             int ret = _proto->decode(_recvBuffer.c_str(), iRecvLen, reqIdx);
-            auto it = _sendQueue.find(reqIdx);
+            auto it = _proto->isSupportSeq() ? _sendQueue.begin() : _sendQueue.find(reqIdx);
             if (it != _sendQueue.end())
             {
                 Monitor::getInstance()->report(ret, (tCurTime - it->second));
                 _sendQueue.erase(it);
-            }
-            else if (_proto->isSupportSeq() && reqIdx != -1)
-            {
-                Monitor::getInstance()->report(BM_UNEXPECT, _ep.getTimeout());
             }
 
             _recvBuffer.erase(_recvBuffer.begin(), _recvBuffer.begin() + iRecvLen);

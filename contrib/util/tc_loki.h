@@ -467,7 +467,7 @@ namespace TL
         // The following type helps to overcome subtle flaw in the original
         // implementation of GenScatterHierarchy.
         // The flaw is revealed when the input type list of GenScatterHierarchy
-        // contains more then taf element of the same type (e.g. LOKI_TYPELIST_2(int, int)).
+        // contains more then tars element of the same type (e.g. LOKI_TYPELIST_2(int, int)).
         // In this case GenScatterHierarchy will contain multiple bases of the same
         // type and some of them will not be reachable (per 10.3).
         // For example before the fix the first element of Tuple<LOKI_TYPELIST_2(int, int)>
