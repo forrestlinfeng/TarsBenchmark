@@ -11,12 +11,12 @@ eab专门为tars服务量身订做的无码压测工具，利用epoll和多进�
 ## 使用说明
 
 ### 举个栗子：
-./eab -c 600 -s 6000 -D 192.168.31.1 -P 10505 -p tars -S tars.DemoServer.DemoObj -M add -C test.txt
+./eab -c 600 -s 6000 -D 192.168.31.1 -P 10505 -p tars -S tars.DemoServer.DemoObj -M test -C test.txt
 
-### -C参数说明
-用例文件建议使用tars2case工具自动生成接口用例
+### 参数文件生成
+用例文件一般建议使用tars2case工具自动生成，工具可以细化到接口级，用户可以根据业务需要修改参数的值
 
-#### TARS服务用例编写说明:
+### 用例编写说明:
 文件分为上下部分，用"#"开头行分割，上半部分为RPC参数，下半部分为RPC调用参数的值，跟参数一一对应
 
 - **参数帮助说明**：
