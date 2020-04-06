@@ -1,6 +1,6 @@
 ## 简单介绍
 
-eab专门为tars服务打造的自动化压测工具，利用EPOLL和多进程，充分发掘压测机的性能，8核机器能模拟20W+/S的输出能力，具备以下特性：
+eab专门为tars服务量身订做的无码压测工具，利用epoll和多进程，充分发掘压测机的性能，具备以下特性：
 
  - 网络高性能：8核机器TPS支持超过20W/S;
  - 通讯扩展性：网络层支持TCP/UDP两种协议方式;
@@ -11,12 +11,12 @@ eab专门为tars服务打造的自动化压测工具，利用EPOLL和多进程�
 ## 使用说明
 
 ### 举个栗子：
-./eab -c 600 -s 6000 -D 192.168.31.1 -P 10505 -p tars -S tars.DemoServer.DemoObj -M add -C test.txt
+./eab -c 600 -s 6000 -D 192.168.31.1 -P 10505 -p tars -S tars.DemoServer.DemoObj -M test -C test.txt
 
-### -C参数说明
-用例文件建议使用tars2case工具自动生成接口用例
+### 参数文件生成
+用例文件一般建议使用tars2case工具自动生成，工具可以细化到接口级，用户可以根据业务需要修改参数的值
 
-#### TARS服务用例编写说明:
+### 用例编写说明:
 文件分为上下部分，用"#"开头行分割，上半部分为RPC参数，下半部分为RPC调用参数的值，跟参数一一对应
 
 - **参数帮助说明**：
@@ -37,11 +37,13 @@ eab专门为tars服务打造的自动化压测工具，利用EPOLL和多进程�
  6. 3、4、5可以嵌套使用
 
 - **例如**：
+```
 vector<string>|struct<string, int>|map<string, string>
 #######
 <abc, def, tt, fbb>
 <abc, 1>
 [abc=def, dfd=bbb]
+```
 
 ### 压测结果显示
 ![压测结果](docs/image/result.jpg)
