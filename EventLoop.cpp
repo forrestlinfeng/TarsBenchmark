@@ -78,11 +78,11 @@ namespace bm
             if(ev.data.u64 == 0) continue;
             Transport *conn = (Transport*)ev.data.u64;
 
-            // 读写一次
+            // ????????
             conn->handleRead();
             conn->handleWrite();
 
-            // err
+            // ??????
             if (ev.events & EPOLLERR)
             {
                 conn->handleError();

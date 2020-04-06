@@ -114,8 +114,8 @@ namespace bm
         {
             string sRetMsg = map2str(retCount);
             sort(queueCost.begin(), queueCost.end());
-            tmpStat.p90Time = calcPercent(90);
-            tmpStat.p99Time = calcPercent(99);
+            tmpStat.p90Time = calcPercent(900);
+            tmpStat.p99Time = calcPercent(990);
             tmpStat.p999Time = calcPercent(999);
 
             RMB(); // sync read
@@ -125,12 +125,10 @@ namespace bm
             uint32_t newTail = (ch->tailIdx + 1) % ch->itemSize;
             if (oldHead == newTail)
             {
-                // wrapped back
                 return;
             }
 
-            int ret = CAS(&ch->tailIdx, oldTail, newTail);
-		    if(!ret)
+		    if (!CAS(&ch->tailIdx, oldTail, newTail))
             {
                 return;
             }
@@ -143,7 +141,6 @@ namespace bm
             }
 
             WMB(); // sync write with other processors
-
             tmpStat.clear();
             retCount.clear();
             queueCost.clear();
@@ -164,7 +161,6 @@ namespace bm
 		    {
 			    WMB();
                 IntfStat tmpStat;
-                // cerr << "CAS Recv succ:" << oldTail << endl;
                 memcpy(&tmpStat, &ch->itemList[oldHead], sizeof(tmpStat));
                 if (tmpStat.staFlag == STA_FLAG && tmpStat.endFlag == END_FLAG)
                 {

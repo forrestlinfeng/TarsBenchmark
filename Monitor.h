@@ -59,21 +59,22 @@ namespace bm
                 costTimes[i] += src.costTimes[i];
             }
 
+            int32_t totalCnt = totalCount + src.totalCount;
             if ((totalCount + src.totalCount) > 0)
             {
-                p90Time  = (p90Time*totalCount + src.p90Time*src.totalCount) / (totalCount + src.totalCount);
-                p99Time  = (p99Time*totalCount + src.p99Time*src.totalCount) / (totalCount + src.totalCount);
-                p999Time = (p999Time*totalCount + src.p999Time*src.totalCount) / (totalCount + src.totalCount);
+                p90Time  = (p90Time*totalCount + src.p90Time*src.totalCount) / totalCnt;
+                p99Time  = (p99Time*totalCount + src.p99Time*src.totalCount) / totalCnt;
+                p999Time = (p999Time*totalCount + src.p999Time*src.totalCount) / totalCnt;
             }
 
+            totalTime  += src.totalTime;
             totalCount += src.totalCount;
             failCount  += src.failCount;
             succCount  += src.succCount;
             totalSendBytes += src.totalSendBytes;
             totalRecvBytes += src.totalRecvBytes;
-            totalTime  += src.totalTime;
-            maxTime = max(src.maxTime, maxTime);
-            minTime = min(src.minTime, minTime);
+            maxTime = std::max(src.maxTime, maxTime);
+            minTime = std::min(src.minTime, minTime);
             return *this;
         }
 

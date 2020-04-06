@@ -76,7 +76,6 @@ namespace bm
 
         handleProcess();
         checkConnect();
-        handleWrite();
         return 0;
     }
 
@@ -234,6 +233,7 @@ namespace bm
             if (ret != 0 && ret == -1 && errno != EINPROGRESS)
             {
                 close();
+                Monitor::getInstance()->report(BM_SOCK_NCONNECTED);
                 return false;
             }
         }
@@ -246,7 +246,7 @@ namespace bm
     bool Transport::checkConnect()
     {
         struct tcp_info info;
-        int len =sizeof(info);
+        int len = sizeof(info);
         int ret = ::getsockopt(getfd(), IPPROTO_TCP, TCP_INFO, &info, (socklen_t *)&len);
         if (ret == 0 && info.tcpi_state == TCP_ESTABLISHED)
         {
