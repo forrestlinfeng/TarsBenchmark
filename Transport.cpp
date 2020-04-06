@@ -41,6 +41,11 @@ namespace bm
                 Monitor::getInstance()->report(iRet);
                 return iRet;
             }
+            else if(iRet == 0)
+            {
+                break; // 缓冲区数据太多，先处理一下回包
+            }
+
             _sendBuffer.erase(_sendBuffer.begin(), _sendBuffer.begin() + iRet);
         }
         return 0;

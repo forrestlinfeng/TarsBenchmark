@@ -232,7 +232,7 @@ void printPeriod(int intvlTime)
 
     if (intvlTime > 0)
     {
-        double totalDecimal = std::max(1.00, (double)gStatInf.totalCount);
+        double totalDecimal = std::max(1.00, (double)statInf.totalCount);
         double failRate = min(statInf.failCount, statInf.totalCount) / totalDecimal;
         printf("\n\n--------------------------------------------------------------------------------------------------------------------\n");
         printf("Time\t\t\tTotal\tSucc\tFail\tRate\tMax(ms)\tMin(ms)\tAvg(ms)\tP90(ms)\tP99(ms)\tP999(ms)\tTPS\n");
