@@ -180,16 +180,21 @@ namespace bm
         for (int i = 0; i < num; ++i)
         {
             const epoll_event& ev = loop->get(i);
-            if (ev.data.u64 == 0) continue;
-
-            Transport *conn = (Transport*)ev.data.u64;
-            conn->handleRead();
-            conn->handleWrite();
-
-            // 出错执行
-            if (ev.events & EPOLLERR)
+            Transport *conn = (Transport*)loop->getU64(ev);
+            if (conn != NULL)
             {
-                conn->handleError();
+                // 强制读一下
+                conn->handleRead();
+                if (loop->writeEvent(ev))
+                {
+                    conn->handleWrite();
+                }
+
+                // 出错执行
+                if (loop->errorEvent(ev))
+                {
+                    conn->handleError();
+                }
             }
         }
     }
@@ -226,11 +231,17 @@ namespace bm
         {
             return true;
         }
-
+#if TARGET_PLATFORM_IOS
+        struct tcp_connection_info info;
+        int len = sizeof(info);
+        int ret = ::getsockopt(getfd(), IPPROTO_TCP, TCP_CONNECTION_INFO, &info, (socklen_t *)&len);
+        if (ret == 0 && info.tcpi_state == TCPS_ESTABLISHED)
+#else
         struct tcp_info info;
         int len = sizeof(info);
         int ret = ::getsockopt(getfd(), IPPROTO_TCP, TCP_INFO, &info, (socklen_t *)&len);
         if (ret == 0 && info.tcpi_state == TCP_ESTABLISHED)
+#endif
         {
             _connStatus = eConnected;
             return true;
