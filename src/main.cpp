@@ -287,8 +287,8 @@ void printFinal(int intvlTime)
     printf("Total duration:           %d[sec]\n", realIntvlTime);
     printf("Transfer rate:            %.2f[Kbytes/sec]\n", (double)gStatInf.totalSendBytes/(realIntvlTime*800));
     printf("Requests per second:      %d[#/sec](mean)\n", gStatInf.totalCount/realIntvlTime);
-    printf("Request size(Avg):        %ld\n", gStatInf.totalSendBytes/gStatInf.totalCount);
-    printf("Response size(Avg):       %ld\n", gStatInf.totalRecvBytes/gStatInf.totalCount);
+    printf("Request size(Avg):        %ld\n", (size_t)gStatInf.totalSendBytes/gStatInf.totalCount);
+    printf("Response size(Avg):       %ld\n", (size_t)gStatInf.totalRecvBytes/gStatInf.totalCount);
     printf("Latency time(Avg):        %2.2f[ms]\n", gStatInf.totalTime/totalDecimal);
     printf("Latency time(P90):        %2.2f[ms]\n", gStatInf.p90Time);
     printf("Latency time(P99):        %2.2f[ms]\n", gStatInf.p99Time);

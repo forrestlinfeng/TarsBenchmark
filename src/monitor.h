@@ -34,8 +34,8 @@ namespace bm
         int32_t     succCount;
         int32_t     failCount;
         int32_t     totalCount;
-        int64_t     totalSendBytes;
-        int64_t     totalRecvBytes;
+        size_t      totalSendBytes;
+        size_t      totalRecvBytes;
         int8_t      retCount[1024];
         int8_t      endFlag;
 
