@@ -47,9 +47,9 @@ bool                gRunFlag;
 size_t              gSpeed;
 size_t              gConsNum;
 size_t              gInterval;
-int64_t             gRunCores;
+size_t              gRunCores;
 string              gProtoName;
-int64_t             gStartTime;
+size_t              gStartTime;
 IntfStat            gStatInf;
 vector<TC_Endpoint> gEps;
 
@@ -278,7 +278,7 @@ void printFinal(int intvlTime)
     printf("Server Protocol:        %s\n\n\n", LICODE_GETSTR("-p", "").c_str());
 
     printf("Concurrency Procesor:     %ld\n", gRunCores);
-    printf("Concurrency Connections:  %ld\n", gConsNum * gRunCores);
+    printf("Concurrency Connections:  %lu\n", gConsNum * gRunCores);
     printf("Connections per Procesor: %ld\n", gConsNum);
     printf("Success requests:         %d\n", gStatInf.succCount);
     printf("Success rate:             %.2f%%\n", (1 - failRate) * 100);
@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
 
     // 创建子进程进行压测
     gStartTime = TBNOWMS;
-    for (int ip = 0; ip < gRunCores; ip++)
+    for (size_t ip = 0; ip < gRunCores; ip++)
     {
         int pid = fork();
         if (pid == 0)

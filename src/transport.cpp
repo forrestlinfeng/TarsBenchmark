@@ -232,6 +232,7 @@ namespace bm
             return true;
         }
 #if TARGET_PLATFORM_IOS
+        #include <netinet/tcp_fsm.h>
         struct tcp_connection_info info;
         int len = sizeof(info);
         int ret = ::getsockopt(getfd(), IPPROTO_TCP, TCP_CONNECTION_INFO, &info, (socklen_t *)&len);
