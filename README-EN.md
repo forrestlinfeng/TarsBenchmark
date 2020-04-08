@@ -1,46 +1,75 @@
 [点我查看中文版](README.md)
 
-DCache is a distributed NoSQL system based on  [Tars framework](https://github.com/TarsCloud/Tars), which supports LRU algorithm and data persistence.
+## Introduction
 
-There are many teams int Tencent that use DCache, and the total number of daily access exceeds one trillion.
+tb is an uncoded pressure measurement tool specially tailored for tars services. It utilizes event-driven and multi-process to fully explore the performance of the pressure measurement machine and has the following features:
 
-## Features Of DCache
+ - High network performance(8-core machine supports more than 20W/S TPS)
+ - Communication scalability(The network layer supports two TCP / UDP protocol modes)
+ - Protocol scalability(the application layer supports Http/Tars service pressure testing)
+ - Perfect real-time statistics and monitoring support. Provide the number of requests/TPS/time-consuming/success rate distribution in the cycle
 
-* Support a variety of data structures: including key-value, k-k-row, list, set, zset.
-* Distributed storage with good scalability.
-* An LRU cache, support expiration mechanism and data persistence.
-* With a perfect platform for maintaining and monitoring. 
+## Compile
+```
+mkdir build; cd build; cmake ..; make;
+```
 
-## Supported operating systems
+## Usage
+### Example
+```
+./tb -c 600 -s 6000 -D 192.168.31.1 -P 10505 -p tars -S tars.DemoServer.DemoObj -M test -C test.txt
+```
 
-> * Linux
+### Case File generation
+The use case file is recommended to be automatically generated using the tars2case tool. Users can modify the parameter values according to business needs
+```
+/usr/local/tars/cpp/tools/tars2case Demo.tars --dir=benchmark
 
-## Supported programming languages
+cd benchmark && ls
+echo.case  test.case
+```
 
-> * C++
+### Introduction to writing case
+The file is divided into upper and lower parts, separated by a line beginning with "#", the upper part is the RPC parameter, and the lower part is the value of the RPC call parameter, which corresponds to the parameter one by one
 
-## Documents
+- **Parameter help description**：
+1. Input parameters are separated by "|" symbols, that is, "," in tars parameters are replaced with "|"
+2. Parameters of struct like: struct <tag require | optional field 1, field 2, field 3 ...>, if tag starts from 0, directly field 1
+3. Parameters of vector like: vector <type>
+4. Parameters of map lik: map <key type, value type>
+5. 2, 3, 4 can be nested
 
-For API usage, see [proxy_api_guide-en.md](docs-en/proxy_api_guide-en.md),for more details, see [docs](docs-en/).
+- **Parameter Value help description**：
+1. <strong> Basic type </strong> random value setting:
+   <strong>Random Random Value</strong> like as [1-100], which means it appears randomly within 1-100, type must be a number
+   <strong>Limited random value</strong> like as [1,123,100], which means it appears randomly in 1,123,100, which type can be a string
+2. Enter the parameters for each parameter line, that is, the "," in the tars parameter list is replaced with a carriage return
+3. Value of struct like: <field value 1, field value 2, field value 3 ...>
+4. Value of vector like: <value 1, value 2, value 3 ...>
+5. Value of map like: [key1 = val1, key2 = val2, key3 = val3 ...]
+6. 3, 4, 5 can be nested
 
-## Installation
+- **E.g**：
+```
+vector<string>|struct<string, int>|map<string, string>
+#######
+<abc, def, tt, fbb>
+<abc, 1>
+[abc=def, dfd=bbb]
+```
 
-See [install-en.md](docs/install.md)
+### Pressure test result display
+![results](docs/image/result.jpg)
 
-## Overview Of Project Directories
+## FAQ
 
-Directory |Role
-------------------|----------------
-src/Comm           |Shared code
-src/ConfigServer   |Configuration service
-src/DbAccess       |Data persistence service
-src/KVCacheServer  |k-v storage engine
-src/MKVCacheServer |k-k-row、list、set、zset storage engine
-src/OptServer      |Service deployment, operation and maintenance management, this module serves the web management platform
-src/PropertyServer |Monitor information reporting service
-src/Proxy          |Proxy service
-src/Router         |Routing service
-src/TarsComm       |Tars data structures
-src/thirdParty     |Third party libraries
+ - What is the solution for the specified rate of tb
+1. The specified unit of rate is a single target machine. If there are n target machines, the statistical TPS = rate * n
+2. If the pressure measurement rate is not specified, tb will launch a shock to the target machine at full speed.
 
-* ```docs-en``` : Documentation
+ - How is tb high performance achieved?
+First, avoid the network IO blocking of the process through event-driven, maximize the CPU utilization,
+Secondly, the tool will create the same number of pressure test processes based on the number of CPU cores, and the number of connections and the pressure test rate will be divided equally among the child processes.
+
+ - How to synchronize data synchronization between tb pressure testing process?
+Data sharing is achieved through a lock-free shared memory queue, and the statistical results are output in the main process
