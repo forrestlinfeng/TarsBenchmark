@@ -20,7 +20,6 @@
 #include "licote.h"
 #include "private.h"
 
-
 /* 提取字符串的宏 */
 #define __MSG(idx)				g_LicoteM[idx][__g_licote_lan]
 /* 获取选项名称 */
@@ -85,7 +84,7 @@ typedef struct __licote_option{
 	const char*				sopt;	/* 短选项标记符 */
 	const char*				lopt;	/* 长选项标记符 */
 	const char*				info;	/* 提示信息 */
-	__u16					flag;	/* 开关型,可选的,版本,帮助等标记 */
+	uint16_t				flag;	/* 开关型,可选的,版本,帮助等标记 */
 	void*					value;	/* 选项值 */
 	licote_hook_t			hook;	/* 钩子函数 */
 	struct list_head		list0;	/* 原始选项链表 */
@@ -133,7 +132,7 @@ __g_licote_gather	= 5;			/* 集合显示个数阀值 */
 /* Licote支持的标记 */
 static struct __option_flag{
 	char		f;
-	__u16		v;
+	uint16_t		v;
 }g_LicoteF[] = {
 	{':', FLAGS_ONOFF},					/* 修饰选项为开关型 */
 	{'>', FLAGS_OPTIONAL|FLAGS_DEPEND},	/* 修饰选项为条件依赖[优先级不能低于下面的普通字符] */
@@ -149,15 +148,15 @@ static struct __option_flag{
 
 /* Licote管理结构体 */
 static struct __licote_core{
-	__u32					argc;		/* 参数个数 */
+	uint32_t				argc;		/* 参数个数 */
 	char**					argv;		/* 参数缓存 */
 	const char*				path;		/* 命令路径 */
 	const char*				name;		/* 程序名称 */
 	const char*				optpwd;		/* 隐藏选项的名称 */
-	__u16					hide;		/* 隐藏选项标记 */
-	__u16					count;		/* 选项的个数(包括分隔符/附件选项等) */
-	__u8					style;		/* Licote风格 */
-	__u8					gather;		/* 开关型短选项的个数 */
+	uint16_t				hide;		/* 隐藏选项标记 */
+	uint16_t				count;		/* 选项的个数(包括分隔符/附件选项等) */
+	uint8_t					style;		/* Licote风格 */
+	uint8_t					gather;		/* 开关型短选项的个数 */
 }g_LicoteC;
 
 /* 所有选项链表 */
@@ -248,7 +247,7 @@ static LicoteOption*
 __licote_hash_get(const char* opt);
 /** 将选项插入HASH链表 */
 static int
-__licote_hash_insert(__u32 key, LicoteOption* popt);
+__licote_hash_insert(uint32_t key, LicoteOption* popt);
 /** 将node插入opt所在选项的依赖列表 */
 static int
 __licote_list_insert(LicoteOption* node,
@@ -896,7 +895,7 @@ __licote_hash_get(const char* opt)
 }
 
 static int
-__licote_hash_insert(__u32 key, LicoteOption* popt)
+__licote_hash_insert(uint32_t key, LicoteOption* popt)
 {
 	ASSERT(key < LICOTE_HASH_SIZE && popt);
 
@@ -1024,7 +1023,7 @@ static void
 __licote_show_version(void)
 {
 	/* 显示漂亮的LOGO */
-	__u32 i = 0;
+	uint32_t i = 0;
 	for(i=0; i<ARRAY_SIZE(g_LicoteL); i++){
 		LICOTE_SHOW("%s\n", g_LicoteL[i]);
 	}
