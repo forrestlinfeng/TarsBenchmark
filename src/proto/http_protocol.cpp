@@ -3,33 +3,33 @@
  *
  * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/BSD-3-Clause
  *
- * Unless required by applicable law or agreed to in writing, software distributed 
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-#include "CommDefs.h"
-#include "HttpProtocol.h"
+#include "commdefs.h"
+#include "http_protocol.h"
 #include "util/tc_http.h"
 
 using namespace tars;
 
 namespace bm
 {
-    IMPLEMENT_PROTODYNCREATE(httpProtocol)
+    IMPLEMENT_DYNCREATE(httpProtocol, httpProtocol)
 
     int httpProtocol::initialize(int argc, char** argv)
     {
         // 支持命令
-        licote_option_add("-H", "o",  "指定Header内容");
-        licote_option_add("-C", "o",  "指定Cookie内容");
-        licote_option_add("-F", "o",  "POST文件");
-        licote_option_add("-u", NULL, "目标URL地址");
+        licote_option_add("-H", "o",  "add header content");
+        licote_option_add("-C", "o",  "set cookie content");
+        licote_option_add("-F", "o",  "post file");
+        licote_option_add("-u", NULL, "target url");
         licote_option_init(argc, argv);
 
         TC_URL cUrl;
@@ -160,7 +160,7 @@ namespace bm
         }
 
         TC_HttpResponse httpRsp;
-        httpRsp.parseResponseHeader(buf);
+        httpRsp.parseResponseHeaderString(buf, posBody);
         if (httpRsp.getStatus() == 204 || httpRsp.getStatus() == 301 || httpRsp.getStatus() == 302)
         {
             // 直接返回

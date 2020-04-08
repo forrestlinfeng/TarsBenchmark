@@ -3,18 +3,18 @@
  *
  * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/BSD-3-Clause
  *
- * Unless required by applicable law or agreed to in writing, software distributed 
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-#include "CommDefs.h"
-#include "TarsProtocol.h"
+#include "commdefs.h"
+#include "tars_protocol.h"
 #include "util/tc_common.h"
 
 namespace bm
@@ -33,14 +33,14 @@ namespace bm
     const string PT_STRUCT  = "struct";
     const string PT_UNSIGNED = "unsigned";
 
-    IMPLEMENT_PROTODYNCREATE(tarsProtocol)
+    IMPLEMENT_DYNCREATE(tarsProtocol, tarsProtocol)
 
     int tarsProtocol::initialize(int argc, char** argv)
     {
         // 支持命令
-        licote_option_add("-S", "o",   "RPC调用服务名称");
-        licote_option_add("-M", NULL,  "RPC调用函数名称");
-        licote_option_add("-C", NULL,  "压测用例文件");
+        licote_option_add("-S", "o",   "tars servant");
+        licote_option_add("-M", NULL,  "tars single interface name");
+        licote_option_add("-C", NULL,  "tars single interface case");
         licote_option_init(argc, argv);
 
         _servant  = LICODE_GETSTR("-S", "");
@@ -54,7 +54,7 @@ namespace bm
         ifstream ifs(sFileName.c_str());
         if (!ifs.is_open())
         {
-            licote_option_help("用例文件打开失败\n");
+            licote_option_help("case file open failed\n");
         }
 
         string sLine;
@@ -86,7 +86,7 @@ namespace bm
 
         if (_paraVals.size() !=  _paraList.size())
         {
-            licote_option_help("用例参数配置个数不匹配\n");
+            licote_option_help("case parameter not match\n");
         }
 
         try
@@ -99,7 +99,7 @@ namespace bm
         }
         catch (exception& e)
         {
-            string s = string("用例参数数据类型不匹配:") + e.what() + "\n";
+            string s = string("case datatype not match:") + e.what() + "\n";
             licote_option_help(s.c_str());
         }
         return 0;
@@ -213,7 +213,7 @@ namespace bm
             throw runtime_error("invalid map val" + type);
         }
 
-        return trim(s.substr(p + 1, s.size() - p - 1));
+        return TC_Common::trim(s.substr(p + 1, s.size() - p - 1));
     };
 
     vector<string> tarsProtocol::getArray(const string& v)

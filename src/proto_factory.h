@@ -3,14 +3,14 @@
  *
  * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/BSD-3-Clause
  *
- * Unless required by applicable law or agreed to in writing, software distributed 
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 #ifndef _PROTO_FACTORY_H_
@@ -18,7 +18,7 @@
 
 #include <map>
 #include <stdexcept>
-#include "Protocol.h"
+#include "protocol.h"
 using namespace std;
 
 namespace bm
@@ -34,13 +34,14 @@ namespace bm
             Protocol* cmd = NULL;
             if (_protos.find(name) == _protos.end())
             {
-                DyncObject* obj = TCreateObject(name.c_str());
+                TC_DYN_Object* obj = TC_DYN_CreateObject(name.c_str());
                 if(!obj)
                 {
                     throw runtime_error("Command not existed:" + name);
                 }
-
+                /*
                 obj->setName(name);
+                */
                 if ((cmd = dynamic_cast<Protocol*>(obj)) == NULL)
                 {
                     throw runtime_error("NULL command:" + name);
@@ -60,15 +61,15 @@ namespace bm
 
         void destroyObject(void)
         {
-            for (map<string, DyncObject*>::iterator itm =  _protos.begin(); itm != _protos.end(); )
+            for (map<string, TC_DYN_Object*>::iterator itm =  _protos.begin(); itm != _protos.end(); )
             {
                 delete itm->second;
-                _protos.erase(itm++);    
+                _protos.erase(itm++);
             }
         }
 
     private:
-        map<string, DyncObject*>    _protos;
+        map<string, TC_DYN_Object*>    _protos;
     };
 };
 /////////////////////////////////////////////////////////////////

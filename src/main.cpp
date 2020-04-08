@@ -3,55 +3,55 @@
  *
  * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/BSD-3-Clause
  *
- * Unless required by applicable law or agreed to in writing, software distributed 
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-#include "Monitor.h"
-#include "Transport.h"
+#include "monitor.h"
+#include "transport.h"
 #include "signal.h"
 #include <sys/wait.h>
 using namespace bm;
 
 // LICOTE命令声明
 LICOTE_OPTION_BEGIN
-LICOTE_OPTION_DECL("-c", 	NULL, 	"连接数量");
-LICOTE_OPTION_DECL("-D", 	NULL, 	"目标服务器IP");
-LICOTE_OPTION_DECL("-P", 	NULL, 	"网络传输端口");
-LICOTE_OPTION_DECL("-T", 	"o", 	"网络传输协议(tcp|udp)");
-LICOTE_OPTION_DECL("-I", 	"o", 	"压测总时长");
-LICOTE_OPTION_DECL("-t", 	"o", 	"超时时间");
-LICOTE_OPTION_DECL("-s", 	"o", 	"指定速率");
-LICOTE_OPTION_DECL("-i", 	"o", 	"查看间隔时间");
-LICOTE_OPTION_DECL("-n", 	"o", 	"制定最大进程限制");
-LICOTE_OPTION_DECL("-p", 	"o", 	"接口通信协议(tars|http)");
-LICOTE_OPTION_DECL("-h", 	"h", 	"帮助信息");
+LICOTE_OPTION_DECL("-c", 	NULL, 	"number of connections");
+LICOTE_OPTION_DECL("-D", 	NULL, 	"target server address(ipv4)");
+LICOTE_OPTION_DECL("-P", 	NULL, 	"target server port");
+LICOTE_OPTION_DECL("-T", 	"o", 	"network protocol(tcp|udp)");
+LICOTE_OPTION_DECL("-I", 	"o", 	"continue time(by second)");
+LICOTE_OPTION_DECL("-i", 	"o", 	"view interval");
+LICOTE_OPTION_DECL("-t", 	"o", 	"overtime time");
+LICOTE_OPTION_DECL("-s", 	"o", 	"maximum tps");
+LICOTE_OPTION_DECL("-n", 	"o", 	"maximum process");
+LICOTE_OPTION_DECL("-p", 	"o", 	"server protocol(tars|http)");
+LICOTE_OPTION_DECL("-h", 	"h", 	"help info");
 
 LICOTE_SET_LANGUAGE(CN);
-LICOTE_SET_VERSION("GPL");
-LICOTE_SET_EXAMPLE("./eab -c 2000 -s 8000 -D 192.168.16.1 -P 10505 -p tars -i 10;"
-                   "./eab -c 2000 -s 8000 -t 6000 -D 127.0.0.1,192.168.32.1 -P 80 -u http://www.qq.com");
-LICOTE_SET_DESCRIPTION("增强型压测工具");
+LICOTE_SET_VERSION("BSD");
+LICOTE_SET_EXAMPLE("./tb -c 2000 -s 8000 -D 192.168.16.1 -P 10505 -p tars -i 10 -S tars.DemoServer.DemoObj -M test -C test.case;"
+                   "./tb -c 2000 -s 8000 -t 6000 -D 192.168.31.1,192.168.32.1 -P 80 -u http://www.qq.com");
+LICOTE_SET_DESCRIPTION("tars benchmark tool");
 LICOTE_OPTION_END
 
 /**
 *  全局变量定义
 */
+bool                gRunFlag;
 size_t              gSpeed;
 size_t              gConsNum;
 size_t              gInterval;
 int64_t             gRunCores;
 string              gProtoName;
-bool                gRunFlag;
-IntfStat            gStatInf;
-vector<Endpoint>    gEps;
 int64_t             gStartTime;
+IntfStat            gStatInf;
+vector<TC_Endpoint> gEps;
 
 
 /**
@@ -71,9 +71,9 @@ int initialize(int argc, char* argv[])
         gRunCores = std::max(LICODE_GETINT("-n", getProcNum()), (int64_t)1);
 
         // EndPoint初始化
-        Endpoint ep("", LICODE_GETINT("-P", 0), LICODE_GETINT("-t", 3000));
-        ep.setTcp(LICODE_GETSTR("-T", "tcp") != string("udp"));
-        vector<string> vd = sepstr(LICODE_GETSTR("-D", ""), ",");
+        TC_Endpoint::EType netType = LICODE_GETSTR("-T", "tcp") != "udp" ? TC_Endpoint::TCP : TC_Endpoint::UDP;
+        TC_Endpoint ep("", LICODE_GETINT("-P", 0), LICODE_GETINT("-t", 3000), netType);
+        vector<string> vd = TC_Common::sepstr<string>(LICODE_GETSTR("-D", ""), ",");
         for (size_t ii = 0; ii < vd.size() && !vd[ii].empty(); ii++)
         {
             ep.setHost(vd[ii]);
@@ -119,12 +119,11 @@ int initialize(int argc, char* argv[])
 /**
 *  压测主程序run
 */
-
 int run(int seqNum, int argc, char* argv[])
 {
     // epoll初始化
-    EPollLoop    eLoop;
-    eLoop.initialize(MAX_FD);
+    TC_Epoller eLoop;
+    eLoop.create(MAX_FD);
 
     // 创建连接
     vector<Transport*> vCons;
@@ -151,24 +150,31 @@ int run(int seqNum, int argc, char* argv[])
     int64_t nextSendTime = 0;
     while (gRunFlag)
     {
-        int64_t curSendTime = getNow();
-        if (curSendTime >= nextSendTime)
+        try
         {
-            nextSendTime = curSendTime + gInterval;
-            for (size_t i = 0; i < vCons.size(); i++)
+            int64_t curSendTime = TC_Common::now2us();
+            if (curSendTime >= nextSendTime)
             {
-                vCons[i]->trySend(requestId);
-                vCons[i]->checkTimeOut(curSendTime/1000);
-                requestId += gRunCores;
+                nextSendTime = curSendTime + gInterval;
+                for (size_t i = 0; i < vCons.size(); i++)
+                {
+                    requestId += gRunCores;
+                    vCons[i]->trySend(requestId);
+                    vCons[i]->checkTimeOut(curSendTime/1000);
+                }
             }
-        }
 
-        Monitor::getInstance()->syncStat(curSendTime/1000);
-        eLoop.loop(1);
+            Transport::handle(&eLoop, 1);
+            Monitor::getInstance()->syncStat(curSendTime/1000);
+        }
+        catch (tars::TC_Exception& e)
+        {
+            cerr << "tars exception:" << e.what() << endl;
+        }
     }
 
     // 析构链接
-    eLoop.loop(LICODE_GETINT("-t", 3000));
+    Transport::handle(&eLoop, 1000);
     Monitor::getInstance()->syncStat(0);
     for (size_t i = 0; i < vCons.size(); i++)
     {
@@ -237,7 +243,8 @@ void printPeriod(int intvlTime)
         printf("\n\n--------------------------------------------------------------------------------------------------------------------\n");
         printf("Time\t\t\tTotal\tSucc\tFail\tRate\tMax(ms)\tMin(ms)\tAvg(ms)\tP90(ms)\tP99(ms)\tP999(ms)\tTPS\n");
         printf("%s\t%-6d\t%-6d\t%-6d\t%0.2f%%\t%0.2f\t%0.2f\t%0.2f\t%0.2f\t%0.2f\t%0.2f\t\t%d",
-            tm2str((time_t)TNOWMS/1000), statInf.totalCount, statInf.succCount, statInf.failCount, (1 - failRate) * 100,
+            TC_Common::now2str("%Y-%m-%d %H:%M:%S").c_str(),
+            statInf.totalCount, statInf.succCount, statInf.failCount, (1 - failRate) * 100,
             statInf.maxTime, statInf.minTime, statInf.totalTime/totalDecimal,
             statInf.p90Time, statInf.p99Time, statInf.p999Time,
             statInf.totalCount/intvlTime);
@@ -309,7 +316,7 @@ int main(int argc, char* argv[])
     signal(SIGTERM, procSignal);
 
     // 创建子进程进行压测
-    gStartTime = TNOWMS;
+    gStartTime = TBNOWMS;
     for (int ip = 0; ip < gRunCores; ip++)
     {
         int pid = fork();
@@ -323,16 +330,16 @@ int main(int argc, char* argv[])
 
     // 主进程外显
     printPeriod(0);
-    int64_t tCurTime = TNOWMS;
+    int64_t tCurTime = TBNOWMS;
     int iBenIntvl  = LICODE_GETINT("-I", 3600); // 默认1小时
     int iViewIntvl = LICODE_GETINT("-i", 5);
     while (iBenIntvl > 0 && gRunFlag)
     {
         sleep(1);
         iBenIntvl -= 1;
-        if (abs(TNOWMS - tCurTime) > iViewIntvl * 1000)
+        if (abs(TBNOWMS - tCurTime) > iViewIntvl * 1000)
         {
-            tCurTime = TNOWMS;
+            tCurTime = TBNOWMS;
             printPeriod(iViewIntvl);
         }
     }
@@ -345,7 +352,7 @@ int main(int argc, char* argv[])
 
     int status;
     while (wait(&status) > 0);
-    printFinal((TNOWMS - gStartTime) / 1000);
+    printFinal((TBNOWMS - gStartTime) / 1000);
     return 0;
 }
 

@@ -4,17 +4,16 @@
  *
  * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/BSD-3-Clause
  *
- * Unless required by applicable law or agreed to in writing, software distributed 
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-
 #include <stdarg.h>
 #include <regex.h>
 #include "list.h"
@@ -121,7 +120,7 @@ const char*
 __g_licote_more		= NULL;			/* 设置更多信息 */
 const char*
 __g_licote_describe = NULL;			/* 命令描述信息 */
-const char* 
+const char*
 __g_licote_usage	= NULL;			/* 自定义用法信息 */
 const char*
 __g_licote_example	= NULL;			/* 命令使用例子 */
@@ -180,13 +179,13 @@ static const char* g_LicoteL[] = {
 
 /* 用户提示信息 */
 static const char* g_LicoteM[][2] = {
-	{"提示",               "Tips"},
-	{"描述",               "Depict"},
-	{"用法",               "Usage"},
-	{"隐式",               "Hide"},
-	{"选项",               "Option"},
-	{"示例",               "Example"},
-	{"不支持的命令选项",   "Unsupported option"},
+	{"notice",               "Tips"},
+	{"description",          "Depict"},
+	{"usage",                "Usage"},
+	{"hide",                 "Hide"},
+	{"option",               "Option"},
+	{"example",              "Example"},
+	{"不支持的命令选项",   	  "Unsupported option"},
 	{"请输入必须的选项",   "Please input the option"},
 	{"请设置选项的值",     "The option missing argument"},
 	{"错误的用法",         "Invalid usage"},
@@ -211,7 +210,7 @@ static LicoteOption*
 __licote_parse_short(const char* opt);
 /** 选项标记解析 */
 static void
-__licote_parse_flags(LicoteOption* node, 
+__licote_parse_flags(LicoteOption* node,
 					const char* opt,
 					const char* flags);
 /** 处理选项的依赖列表 */
@@ -220,8 +219,8 @@ __licote_parse_depend(LicoteOption* node,
 					const char* opt,
 					const char* buf);
 /** 处理每一个依赖选项 */
-static int 
-__licote_parse_each(LicoteOption* node, 
+static int
+__licote_parse_each(LicoteOption* node,
 					const char* opt,
 					const char* buf);
 /** 显示帮助信息 */
@@ -252,7 +251,7 @@ static int
 __licote_hash_insert(__u32 key, LicoteOption* popt);
 /** 将node插入opt所在选项的依赖列表 */
 static int
-__licote_list_insert(LicoteOption* node, 
+__licote_list_insert(LicoteOption* node,
 					const char* opt,
 					const char* depend);
 /** 更新选项标记 */
@@ -385,7 +384,7 @@ licote_option_add(const char* opt,
 		g_LicoteC.style = opt[0];
 	}
 	if (opt[0] != g_LicoteC.style){
-		LOG_ERROR("register option %s failed: can't mix %s with %s!", opt, 
+		LOG_ERROR("register option %s failed: can't mix %s with %s!", opt,
 					g_LicoteC.style == LINUX ? "Linux" : "Windows",
 					g_LicoteC.style != LINUX ? "Linux" : "Windows");
 		goto REGISTER_FAIL;
@@ -435,15 +434,15 @@ licote_option_hook(const char* patt, licote_hook_t hook)
 		return;
 	}
 	memset(node, 0, sizeof(LicoteOption));
-	
+
 	/* LICOTE 钩子选项将使用选项中的
 	 * info保存模式字符串, value保持regex_t指针
 	*/
 	node->flag  = FLAGS_HOOK|FLAGS_OPTIONAL;
-	node->hook  = hook;	
+	node->hook  = hook;
 	node->info  = patt;
 	if (node->info){
-		node->value = malloc(sizeof(regex_t));	
+		node->value = malloc(sizeof(regex_t));
 		if (!node->value){
 			LOG_ERROR("register option %s failed:malloc failed.", patt);
 			goto REGISTER_FAIL;
@@ -531,11 +530,11 @@ void
 licote_option_help(const char* fmt,...)
 {
 	if (!g_LicoteC.argc || !g_LicoteC.argv){
-		LOG_ERROR("Please don't call %s before licote_option_init.", 
+		LOG_ERROR("Please don't call %s before licote_option_init.",
 					__FUNCTION__);
 		exit(0);
 	}
-	
+
 	/* 显示LICOTE帮助信息 */
 	__licote_show_help();
 
@@ -569,7 +568,7 @@ licote_option_debug(void)
 					node->sopt ? node->sopt : "",
 					node->lopt ? node->lopt : "",
 					node->flag);
-					
+
 		// 如果有依赖列表，则继续打印依赖列表
 		ListNode* ptr = node->child;
 		if (ptr){
@@ -595,7 +594,7 @@ __licote_core_init(void)
 
 	INIT_LIST_HEAD(&g_list);
 	INIT_LIST_HEAD(&g_regex);
-	
+
 	/* 初始化HASH链表 */
 	int i = 0;
 	for(i=0; i<ARRAY_SIZE(g_hash); i++){
@@ -644,7 +643,7 @@ __licote_parse_input(int argc, char** argv)
 {
 	ASSERT(argv);
 
-	int i = 1;	
+	int i = 1;
 	for(i=1; i<argc; i++){
 		struct list_head*	pos = NULL;
 		const char*			opt = argv[i];
@@ -660,7 +659,7 @@ __licote_parse_input(int argc, char** argv)
 			}
 			if (regexec(node->value, opt, 0, NULL, 0) == 0){/* 匹配成功 */
 				nbr = node->hook(opt, argc - i - 1, argv + i + 1);
-				match = 1; 
+				match = 1;
 				break;
 			}
 		}
@@ -754,7 +753,7 @@ __licote_parse_short(const char* opt)
             continue;
 			// 不要退出licote_option_help("%s -- %s", __MSG(ERROR_OPTION), buf);
 		}
-		
+
 		/* 非开关型短选项，必须位列最后一个位置 */
 		if (!(node->flag & FLAGS_ONOFF)){
 			if (i == len - 1){
@@ -775,7 +774,7 @@ __licote_parse_short(const char* opt)
 }
 
 static void
-__licote_parse_flags(LicoteOption* node, 
+__licote_parse_flags(LicoteOption* node,
 					const char* opt,
 					const char* flags)
 {
@@ -790,7 +789,7 @@ __licote_parse_flags(LicoteOption* node,
 		if (node->flag & FLAGS_DEPEND){
 			__licote_parse_depend(node, opt, flags);
 			break;
-		}	
+		}
 		if (node->flag & FLAGS_HIDE){
 			g_LicoteC.hide |= OPT_PWD_EXIST;
 		}
@@ -810,7 +809,7 @@ __licote_parse_depend(LicoteOption* node,
 		return;
 	}
 	strncpy(buf, flags + 1, sizeof(buf) - 1);
-	
+
 	char* ptr = strtok(buf, ">");
 	while(ptr){
 		int ret = __licote_parse_each(node, opt, ptr);
@@ -821,8 +820,8 @@ __licote_parse_depend(LicoteOption* node,
 	};
 }
 
-static int 
-__licote_parse_each(LicoteOption* node, 
+static int
+__licote_parse_each(LicoteOption* node,
 					const char* opt,
 					const char* buf)
 {
@@ -900,7 +899,7 @@ static int
 __licote_hash_insert(__u32 key, LicoteOption* popt)
 {
 	ASSERT(key < LICOTE_HASH_SIZE && popt);
-	
+
 	HashNode* node = (HashNode*)malloc(sizeof(HashNode));
 	if (!node){
 		LOG_ERROR("malloc failed:%s", strerror(errno));
@@ -912,7 +911,7 @@ __licote_hash_insert(__u32 key, LicoteOption* popt)
 }
 
 static int
-__licote_list_insert(LicoteOption* node, 
+__licote_list_insert(LicoteOption* node,
 					const char* opt,
 					const char* depend)
 {
@@ -920,7 +919,7 @@ __licote_list_insert(LicoteOption* node,
 
 	LicoteOption* father = __licote_hash_get(depend);
 	if (!father){
-		LOG_ERROR("The option '%s' depend by '%s' is not declare!", 
+		LOG_ERROR("The option '%s' depend by '%s' is not declare!",
 					depend, opt);
 		return -1;
 	}
@@ -985,7 +984,7 @@ __licote_valid_check(void)
 			continue;
 		}
 
-		if (!(node->flag & FLAGS_OPTIONAL) && 
+		if (!(node->flag & FLAGS_OPTIONAL) &&
 			!(node->flag & FLAGS_EXIST)){
 			licote_option_help("%s -- %s", __MSG(MISS_OPTION), __NAME(node));
 		}
@@ -1009,12 +1008,12 @@ __licote_show_help(void)
 {
 	/* 显示描述信息 */
 	__licote_show_depict();
-	
+
 	/* 显示用法信息 */
 	__licote_show_usage();
 
 	/* 显示选项信息 */
-	__licote_show_hide();	
+	__licote_show_hide();
 	__licote_show_option();
 
 	/* 显示用例信息 */
@@ -1091,7 +1090,7 @@ __licote_show_usage(void)
 		}
 
 		/* 是否集合显示 */
-		if (IS_GATHER_SHOW()){			
+		if (IS_GATHER_SHOW()){
 			if (node->sopt && strlen(node->sopt) == 2 && node->flag & FLAGS_ONOFF){
 				buf2[i++] = node->sopt[1];
 				continue;
@@ -1099,14 +1098,14 @@ __licote_show_usage(void)
 		}
 
 		if (node->flag & FLAGS_OPTIONAL){/* 可选选项 */
-			len3 += snprintf(buf3 + len3, sizeof(buf3) - len3, 
+			len3 += snprintf(buf3 + len3, sizeof(buf3) - len3,
 							"[%s%s] ",  __NAME(node),
-							node->flag & FLAGS_ONOFF ? "" : 
+							node->flag & FLAGS_ONOFF ? "" :
 										(node->sopt ? " val" : value));
 		}else{/* 必需选项 */
-			len1 += snprintf(buf1 + len1, sizeof(buf1) - len1, 
+			len1 += snprintf(buf1 + len1, sizeof(buf1) - len1,
 							"%s%s ", __NAME(node),
-							node->flag & FLAGS_ONOFF ? "" : 
+							node->flag & FLAGS_ONOFF ? "" :
 										(node->sopt ? " val" : value));
 		}
 
@@ -1132,7 +1131,7 @@ __licote_show_hide(void)
 		return;
 	}
 
-	if (__g_licote_pwd && 
+	if (__g_licote_pwd &&
 		!(g_LicoteC.hide & OPT_PWD_CORRECT)){
 		return;
 	}
@@ -1187,7 +1186,5 @@ __licote_show_example(void)
 		LICOTE_SHOW("  %s;\n", ptr);
 		ptr = strtok(NULL, ";");
 	}
-	LICOTE_SHOW("\n");	
+	LICOTE_SHOW("\n");
 }
-
-
