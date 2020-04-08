@@ -35,7 +35,7 @@ mkdir build; cd build; cmake ..; make;
 tars协议参数
   -S                   tars服务servant名称
   -M                   tars服务接口方法
-  -C                   压测用例文件，详见[参数文件生成](#参数文件生成)和[用例编写说明](#用例编写说明)
+  -C                   压测用例文件，详见下文<用例文件生成>和<用例编写说明>
 
 http协议参数
   -H(可选)             :设置Header内容，建议用""应用
@@ -45,7 +45,7 @@ http协议参数
 
 ```
 
-### 参数文件生成
+### Tars用例文件生成
 用例文件一般建议使用tars2case工具自动生成，工具可以细化到接口级，用户可以根据业务需要修改参数的值
 ```
 /usr/local/tars/cpp/tools/tars2case Demo.tars --dir=benchmark
@@ -54,7 +54,7 @@ cd benchmark && ls
 echo.case  test.case
 ```
 
-### 用例编写说明:
+### Tars用例编写说明:
 文件分为上下部分，用"#"开头行分割，上半部分为RPC参数，下半部分为RPC调用参数的值，跟参数一一对应
 
 - **参数帮助说明**：
