@@ -39,9 +39,7 @@ namespace bm
                 {
                     throw runtime_error("Command not existed:" + name);
                 }
-                /*
-                obj->setName(name);
-                */
+
                 if ((cmd = dynamic_cast<Protocol*>(obj)) == NULL)
                 {
                     throw runtime_error("NULL command:" + name);

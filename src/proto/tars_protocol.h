@@ -41,7 +41,7 @@ namespace bm
         tarsProtocol() {}
         virtual ~tarsProtocol() {}
         /**
-         * @brief  静态初始化函数
+         * @brief  协议初始化函数
          *
          * @param argc 参数个数
          * @param argv 参数内容
@@ -110,7 +110,7 @@ namespace bm
          *
          * @return 0成功, 其他失败
          */
-	    Field getField(const string& type, int tag, bool require);
+        Field getField(const string& type, int tag, bool require);
 
         /**
          * @brief  函数注释
@@ -119,7 +119,7 @@ namespace bm
          *
          * @return 0成功, 其他失败
          */
-	    vector<string> getArray(const string& val);
+        vector<string> getArray(const string& val);
 
         /**
          * @brief  获得map的key/value
@@ -128,7 +128,7 @@ namespace bm
          *
          * @return  string
          */
-	    string getMapKey(const string& type);
+        string getMapKey(const string& type);
         string getMapValue(const string& type);
 
         /**

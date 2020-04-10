@@ -135,7 +135,7 @@ namespace bm
         void reportRecv(int64_t rcvTime, int rcvBytes);
 
         /**
-         * @brief  配置同步
+         * @brief  状态同步
          *
          * @param @param rTime     上报的时间点
          */
@@ -162,7 +162,6 @@ namespace bm
         IntfStat        tmpStat;
         map<int, int>   retCount;
         vector<int>     queueCost;
-        struct shm_queue* pQueue; //共享内存队列
     };
 };
 #endif
