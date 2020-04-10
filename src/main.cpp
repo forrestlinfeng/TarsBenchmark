@@ -121,7 +121,7 @@ int initialize(int argc, char* argv[])
 */
 int run(int seqNum, int argc, char* argv[])
 {
-    // epoll初始化
+    // 事件初始化
     TC_Epoller eLoop;
     eLoop.create(MAX_FD);
 
@@ -173,7 +173,7 @@ int run(int seqNum, int argc, char* argv[])
         }
     }
 
-    // 析构链接
+    // 析构链接前收发一次
     Transport::handle(&eLoop, 1000);
     Monitor::getInstance()->syncStat(0);
     for (size_t i = 0; i < vCons.size(); i++)
@@ -196,7 +196,7 @@ void procSignal(int signo)
 }
 
 /**
-*  输出压测结果
+*  输出耗时统计
 */
 void printCost(const IntfStat& statInf)
 {
@@ -217,6 +217,9 @@ void printCost(const IntfStat& statInf)
     }
 }
 
+/**
+*  输出压测周期结果
+*/
 void printPeriod(int intvlTime)
 {
     IntfStat statInf;
@@ -255,6 +258,9 @@ void printPeriod(int intvlTime)
     }
 }
 
+/**
+*  输出最终压测结果
+*/
 void printFinal(int intvlTime)
 {
     printPeriod(0);

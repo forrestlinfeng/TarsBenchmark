@@ -39,10 +39,10 @@ namespace bm
         }
 
         /**
-         * @brief  ³õÊ¼»¯º¯Êı
-         * @param proto     Ğ­ÒéÃû³Æ
-         * @param argc      ²ÎÊı¸öÊı
-         * @param argv      ²ÎÊıÄÚÈİ
+         * @brief  åˆå§‹åŒ–å‡½æ•°
+         * @param proto     åè®®åç§°
+         * @param argc      å‚æ•°ä¸ªæ•°
+         * @param argv      å‚æ•°å†…å®¹
          *
          */
         virtual void initialize(const string& proto, int argc, char** argv)
@@ -51,13 +51,13 @@ namespace bm
         }
 
         /**
-         * @brief  ¹Ø±Õ×ÊÔ´
+         * @brief  å…³é—­èµ„æº
          *
          */
         virtual void close();
 
         /**
-         * @brief  ÊÂ¼ş´¦Àí
+         * @brief  äº‹ä»¶å¤„ç†
          *
          * @return int
          */
@@ -67,28 +67,28 @@ namespace bm
         virtual int handleProcess();
 
         /**
-         * @brief  ¼ì²éSocket²Ù×÷
+         * @brief  æ£€æŸ¥Socketæ“ä½œ
          *
          * @return int
          */
         virtual int checkSocket() = 0;
 
         /**
-         * @brief  ¼ì²é½¨Á´ÊÇ·ñ³É¹¦
+         * @brief  æ£€æŸ¥å»ºé“¾æ˜¯å¦æˆåŠŸ
          *
          * @return bool
          */
         virtual bool checkConnect() { return true; }
 
         /**
-         * @brief  ¼ì²éÊÇ·ñÒÑ¾­³¬Ê±
+         * @brief  æ£€æŸ¥æ˜¯å¦å·²ç»è¶…æ—¶
          *
          * @return bool
          */
         virtual bool checkTimeOut(int64_t tCurTime);
 
         /**
-         * @brief  »ñÈ¡¾ä±ú/socket
+         * @brief  è·å–å¥æŸ„/socket
          *
          * @return int
          */
@@ -96,15 +96,15 @@ namespace bm
         virtual int getfd() { return this->getSocket()->getfd(); }
 
         /**
-         * @brief  ³¢ÊÔ·¢ËÍ
-         * @param uniqId ÒµÎñÊı¾İÊµÀı
+         * @brief  å°è¯•å‘é€
+         * @param uniqId ä¸šåŠ¡æ•°æ®å®ä¾‹
          *
          * @return int
          */
         int trySend(int uniqId);
 
         /**
-         * @brief  ´¦ÀíepollÊ±¼ä
+         * @brief  å¤„ç†epollæ—¶é—´
          *
          */
         static void handle(TC_Epoller* loop, int time);
@@ -130,7 +130,7 @@ namespace bm
         }
 
         /**
-         * @brief  ¼ì²éSocket²Ù×÷
+         * @brief  æ£€æŸ¥Socketæ“ä½œ
          *
          * @return bool
          */
@@ -139,13 +139,13 @@ namespace bm
         virtual bool checkConnect();
 
         /**
-         * ·¢ËÍº¯Êı
+         * å‘é€å‡½æ•°
          *
-         * @param buf  Êı¾İÖ¸Õë
-         * @param len  Êı¾İ³¤¶È
-         * @param flag ±êÖ¾Î»
+         * @param buf  æ•°æ®æŒ‡é’ˆ
+         * @param len  æ•°æ®é•¿åº¦
+         * @param flag æ ‡å¿—ä½
          *
-         * @return 0³É¹¦, ÆäËûÊ§°Ü
+         * @return 0æˆåŠŸ, å…¶ä»–å¤±è´¥
          */
         virtual int send(const char *buf, size_t len)
         {
@@ -162,12 +162,12 @@ namespace bm
         }
 
         /**
-         * ½ÓÊÕ´¦Àíº¯Êı
+         * æ¥æ”¶å¤„ç†å‡½æ•°
          *
-         * @param buf  Êı¾İÖ¸Õë
-         * @param len  Êı¾İ³¤¶È
+         * @param buf  æ•°æ®æŒ‡é’ˆ
+         * @param len  æ•°æ®é•¿åº¦
          *
-         * @return 0³É¹¦, ÆäËûÊ§°Ü
+         * @return 0æˆåŠŸ, å…¶ä»–å¤±è´¥
          */
         int recv(char *buf, size_t& len)
         {
@@ -198,19 +198,19 @@ namespace bm
         }
 
         /**
-         * @brief  ¼ì²éSocket²Ù×÷
+         * @brief  æ£€æŸ¥Socketæ“ä½œ
          *
          * @return bool
          */
         int checkSocket();
 
         /**
-         * ·¢ËÍº¯Êı
+         * å‘é€å‡½æ•°
          *
-         * @param buf  Êı¾İÖ¸Õë
-         * @param len  Êı¾İ³¤¶È
+         * @param buf  æ•°æ®æŒ‡é’ˆ
+         * @param len  æ•°æ®é•¿åº¦
          *
-         * @return 0³É¹¦, ÆäËûÊ§°Ü
+         * @return 0æˆåŠŸ, å…¶ä»–å¤±è´¥
          */
         int send(const char *buf, size_t len)
         {
@@ -226,13 +226,13 @@ namespace bm
         }
 
         /**
-         * ½ÓÊÕ´¦Àíº¯Êı
+         * æ¥æ”¶å¤„ç†å‡½æ•°
          *
-         * @param buf  Êı¾İÖ¸Õë
-         * @param len  Êı¾İ³¤¶È
-         * @param flag ±êÖ¾Î»
+         * @param buf  æ•°æ®æŒ‡é’ˆ
+         * @param len  æ•°æ®é•¿åº¦
+         * @param flag æ ‡å¿—ä½
          *
-         * @return 0³É¹¦, ÆäËûÊ§°Ü
+         * @return 0æˆåŠŸ, å…¶ä»–å¤±è´¥
          */
         int recv(char *buf, size_t& len)
         {
