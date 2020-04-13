@@ -8,6 +8,10 @@ tb专门为tars服务量身订做的无码压测工具，利用epoll和多进程
  - 完善的实时统计与监控支持。提供周期内的请求数/TPS/耗时/成功率分布;
 
 ## 编译说明
+### 依赖:
+tb工具是基于TarsCpp框架开发，所以编译之前请先安装最新TarsCpp开发环境，安装步骤请参考Tars的[TarsCpp的安装文档](https://tarscloud.gitbook.io/tarsdocs/rumen/env/tarscpp)。
+
+### 编译:
 ```
 mkdir build; cd build; cmake ..; make;
 ```
