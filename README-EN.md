@@ -9,7 +9,11 @@ tb is an uncoded pressure measurement tool specially tailored for tars services.
  - Protocol scalability(the application layer supports Http/Tars service pressure testing)
  - Perfect real-time statistics and monitoring support. Provide the number of requests/TPS/time-consuming/success rate distribution in the cycle
 
-## Compile
+## How to compile tb
+###  Dependence
+Install TarsCpp development environment before compiling tb, since it is based on [TarsCpp](https://tarscloud.gitbook.io/tarsdocs/rumen/env/tarscpp).
+
+### Compilation:
 ```
 mkdir build; cd build; cmake ..; make;
 ```

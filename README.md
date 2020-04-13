@@ -13,7 +13,7 @@ mkdir build; cd build; cmake ..; make;
 ```
 
 ## 使用说明
-### 举个栗子:
+### 举个例子:
 ```
 ./tb -c 600 -s 6000 -D 192.168.31.1 -P 10505 -p tars -S tars.DemoServer.DemoObj -M test -C test.txt
 ```
@@ -35,7 +35,7 @@ mkdir build; cd build; cmake ..; make;
 tars协议参数
   -S                   tars服务servant名称
   -M                   tars服务接口方法
-  -C                   压测用例文件，详见下文<用例文件生成>和<用例编写说明>
+  -C                   压测用例文件，详见下文<Tars用例文件生成>和<Tars用例编写说明>
 
 http协议参数
   -H(可选)             :设置Header内容，建议用""修饰
