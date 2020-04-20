@@ -101,7 +101,7 @@ namespace bm
          *
          * @return  string
          */
-	    string getType(const string& type);
+        string getType(const string& type);
 
         /**
          * @brief  解析成员变量
