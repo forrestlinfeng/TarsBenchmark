@@ -43,26 +43,43 @@ namespace bm
          * @param buf  数据包指针
          * @param len  网络数据包长度
          *
+<<<<<<< HEAD
          * @return int
+=======
+         * @return int =0报文不完整; >0:实际报文长度; <0:出错
+>>>>>>> upstream/master
          */
         virtual int input(const char *buf, size_t len);
 
         /**
          * @brief  HTTP协议打包
          *
+<<<<<<< HEAD
          * @param req  业务数据实例
          * @param len  网络数据包长度
          * @param uniqId  全局唯一ID
          *
          * @return 0成功, <0: 其他失败 >0: 需要的buffer长度
+=======
+         * @param buf  数据包指针
+         * @param len  数据包长度
+         * @param uniqId  全局唯一ID
+         *
+         * @return 0成功, <0: 失败 >0: 需要的buffer长度
+>>>>>>> upstream/master
          */
         virtual int encode(char *buf, int& len, int& uniqId);
 
         /**
          * @brief  HTTP协议解包
          *
+<<<<<<< HEAD
          * @param req  业务数据实例
          * @param len  网络数据包长度
+=======
+         * @param buf  数据包指针
+         * @param len  数据包长度
+>>>>>>> upstream/master
          * @param uniqId  全局唯一ID
          *
          * @return 0成功, 其他失败

@@ -24,7 +24,10 @@ namespace bm
 {
     class Protocol : public TC_DYN_Object
     {
+<<<<<<< HEAD
         // DECLARE_DYNCREATE(Protocol)
+=======
+>>>>>>> upstream/master
     public:
         virtual ~Protocol() {}
 
@@ -41,24 +44,41 @@ namespace bm
         /**
          * @brief  协议是否支持有序的
          *
+<<<<<<< HEAD
          * @return 0成功, 其他失败
+=======
+         * @return true: 支持; false: 不支持
+>>>>>>> upstream/master
          */
         virtual int isSupportSeq() { return false; }
 
         /**
+<<<<<<< HEAD
          * 验证数据包的完整性
          *
          * @param data 数据包指针
          * @param len  网络数据包长度
          *
          * @return 参考PACKET_XXXX;
+=======
+         * @brief  判断收包是否完整
+         *
+         * @param buf  数据包指针
+         * @param len  网络数据包长度
+         *
+         * @return int =0报文不完整; >0:实际报文长度; <0:出错
+>>>>>>> upstream/master
          */
         virtual int input(const char *buf, size_t len) = 0;
 
         /**
          * 解析/编码协议, 获取网络数据包的实例
          *
+<<<<<<< HEAD
          * @param req  业务数据实例
+=======
+         * @param buf  数据包指针
+>>>>>>> upstream/master
          * @param len  网络数据包长度
          * @param uniqId  全局唯一ID
          *
