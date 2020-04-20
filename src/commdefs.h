@@ -122,6 +122,7 @@ inline map<int, int> str2map(const string &ss)
         }
     }
     return mm;
+}
 
 /**
  * @brief  map转换string
