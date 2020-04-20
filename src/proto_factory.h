@@ -37,20 +37,12 @@ namespace bm
                 TC_DYN_Object* obj = TC_DYN_CreateObject(name.c_str());
                 if(!obj)
                 {
-<<<<<<< HEAD
-                    throw runtime_error("Command not existed:" + name);
-=======
                     throw runtime_error("protocol not existed:" + name);
->>>>>>> upstream/master
                 }
 
                 if ((cmd = dynamic_cast<Protocol*>(obj)) == NULL)
                 {
-<<<<<<< HEAD
-                    throw runtime_error("NULL command:" + name);
-=======
                     throw runtime_error("null protocol:" + name);
->>>>>>> upstream/master
                 }
 
                 cmd->initialize(argc, argv);

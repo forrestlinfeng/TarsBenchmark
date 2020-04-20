@@ -82,39 +82,6 @@ enum
 /**
  * @brief  string转换map
  *
-<<<<<<< HEAD
- * @param sStr  业务数据实例
- *
- * @return map<string, string>
- */
-inline map<int, int> str2map(const string &sStr)
-{
-    int flag = 0;
-    map<int, int> mapVal;
-    char ch1 = ':', ch2 = ',';
-    string sName, sValue, sBuffer;
-    for (string::size_type pos = 0; pos < sStr.length(); pos++)
-    {
-        //中间分隔符,前面读入是name
-        if (sStr[pos] == ch1)
-        {
-            flag = 1;
-            sName = sBuffer;
-            sBuffer = "";
-        }
-        else if (sStr[pos] == ch2 || (pos + 1) == sStr.length())  //结束符,读入的是值
-        {
-            sValue  = sBuffer;
-            sBuffer = "";
-            if ((pos + 1) == sStr.length())
-            {
-                sValue += sStr[pos];
-            }
-
-            if (sName.length() > 0 && flag)
-            {
-                mapVal[atoi(sName.c_str())] = atoi(sValue.c_str());
-=======
  * @param ss  目标string
  *
  * @return map<int, int>
@@ -146,38 +113,19 @@ inline map<int, int> str2map(const string &ss)
             if (name.length() > 0 && flag)
             {
                 mm[atoi(name.c_str())] = atoi(val.c_str());
->>>>>>> upstream/master
                 flag = 0;
             }
         }
         else
         {
-<<<<<<< HEAD
-            sBuffer += sStr[pos];
-        }
-    }
-    return mapVal;
-=======
             buff += ss[pos];
         }
     }
     return mm;
->>>>>>> upstream/master
-}
 
 /**
  * @brief  map转换string
  *
-<<<<<<< HEAD
- * @param mMap 业务数据实例
- *
- * @return string
- */
-inline string map2str(const map<int, int>& mMap)
-{
-    ostringstream os;
-    for (map<int, int>::const_iterator itm = mMap.begin(); itm != mMap.end(); itm++)
-=======
  * @param mm 目标map
  *
  * @return string
@@ -186,7 +134,6 @@ inline string map2str(const map<int, int>& mm)
 {
     ostringstream os;
     for (map<int, int>::const_iterator itm = mm.begin(); itm != mm.end(); itm++)
->>>>>>> upstream/master
     {
         os << itm->first << ":" << itm->second << ",";
     }
@@ -200,21 +147,12 @@ inline string map2str(const map<int, int>& mm)
  */
 inline int64_t getProcNum(void)
 {
-<<<<<<< HEAD
-    static int procNum = 0;
-    if (procNum == 0)
-    {
-        procNum = sysconf(_SC_NPROCESSORS_ONLN);
-    }
-    return procNum;
-=======
     static int np = 0;
     if (np == 0)
     {
         np = sysconf(_SC_NPROCESSORS_ONLN);
     }
     return np;
->>>>>>> upstream/master
 }
 
 #define MAX_FD  50001

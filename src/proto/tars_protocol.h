@@ -63,24 +63,15 @@ namespace bm
          * @param buf  数据包指针
          * @param len  网络数据包长度
          *
-<<<<<<< HEAD
-         * @return int
-=======
          * @return int =0报文不完整; >0:实际报文长度; <0:出错
->>>>>>> upstream/master
          */
         virtual int input(const char *buf, size_t len);
 
         /**
          * @brief  TARS服务协议打包
          *
-<<<<<<< HEAD
-         * @param req  业务数据实例
-         * @param len  网络数据包长度
-=======
          * @param buf  数据包指针
          * @param len  数据包长度
->>>>>>> upstream/master
          * @param uniqId  全局唯一ID
          *
          * @return 0成功, 其他失败
@@ -106,27 +97,29 @@ namespace bm
         /**
          * @brief  获得类型
          *
-         * @param type  业务数据实例
+         * @param type  数据类型
          *
          * @return  string
          */
 	    string getType(const string& type);
 
         /**
-         * @brief  函数注释
+         * @brief  解析成员变量
          *
-         * @param req 业务数据实例
+         * @param type 数据类型
+         * @param tag  数据编号
+         * @param require 是否必须
          *
-         * @return 0成功, 其他失败
+         * @return Field结构
          */
         Field getField(const string& type, int tag, bool require);
 
         /**
-         * @brief  函数注释
+         * @brief  解析列表成员
          *
-         * @param req 业务数据实例
+         * @param val 配置string变量
          *
-         * @return 0成功, 其他失败
+         * @return vector<string>
          */
         vector<string> getArray(const string& val);
 

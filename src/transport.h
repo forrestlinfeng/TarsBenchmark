@@ -17,10 +17,7 @@
 #define _TRANSPORT_H_
 
 #include "monitor.h"
-<<<<<<< HEAD
 #include "commdefs.h"
-=======
->>>>>>> upstream/master
 #include "protocol.h"
 #include "proto_factory.h"
 
@@ -86,11 +83,8 @@ namespace bm
         /**
          * @brief  检查是否已经超时
          *
-<<<<<<< HEAD
-=======
          * @param tCurTime 当前时间
          *
->>>>>>> upstream/master
          * @return bool
          */
         virtual bool checkTimeOut(int64_t tCurTime);
@@ -98,37 +92,24 @@ namespace bm
         /**
          * @brief  获取句柄/socket
          *
-<<<<<<< HEAD
-         * @return int
-=======
->>>>>>> upstream/master
          */
         virtual TC_Socket *getSocket() { return TC_ClientSocket::getSocket(); }
         virtual int getfd() { return this->getSocket()->getfd(); }
 
         /**
          * @brief  尝试发送
-<<<<<<< HEAD
-         * @param uniqId 业务数据实例
-=======
          *
          * @param uniqId 全局唯一ID
->>>>>>> upstream/master
          *
          * @return int
          */
         int trySend(int uniqId);
 
         /**
-<<<<<<< HEAD
-         * @brief  处理epoll时间
-         *
-=======
          * @brief  处理poll事件
          *
          * @param loop   事件管理器指针
          * @param time   最长等待时间
->>>>>>> upstream/master
          */
         static void handle(TC_Epoller* loop, int time);
     protected:
@@ -166,10 +147,6 @@ namespace bm
          *
          * @param buf  数据指针
          * @param len  数据长度
-<<<<<<< HEAD
-         * @param flag 标志位
-=======
->>>>>>> upstream/master
          *
          * @return 0成功, 其他失败
          */
@@ -256,10 +233,6 @@ namespace bm
          *
          * @param buf  数据指针
          * @param len  数据长度
-<<<<<<< HEAD
-         * @param flag 标志位
-=======
->>>>>>> upstream/master
          *
          * @return 0成功, 其他失败
          */
