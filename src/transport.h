@@ -90,13 +90,6 @@ namespace bm
         virtual bool checkTimeOut(int64_t tCurTime);
 
         /**
-         * @brief  获取句柄/socket
-         *
-         */
-        virtual TC_Socket *getSocket() { return TC_ClientSocket::getSocket(); }
-        virtual int getfd() { return this->getSocket()->getfd(); }
-
-        /**
          * @brief  尝试发送
          *
          * @param uniqId 全局唯一ID
@@ -113,6 +106,20 @@ namespace bm
          */
         static void handle(TC_Epoller* loop, int time);
     protected:
+        /**
+         * @brief  获取socket
+         *
+         * @return TC_Socket指针
+         */
+        virtual TC_Socket *getSocket() { return TC_ClientSocket::getSocket(); }
+
+        /**
+         * @brief  获取句柄
+         *
+         * @return int 句柄ID
+         */
+        virtual int getfd() { return this->getSocket()->getfd(); }
+    protected:
         TC_Endpoint             _ep;
         TC_Epoller*             _loop;
         Protocol*               _proto;
@@ -128,11 +135,7 @@ namespace bm
     class TCPTransport : public Transport
     {
     public:
-        TCPTransport(const TC_Endpoint& ep, TC_Epoller* loop): Transport(ep, loop)
-        {
-
-        }
-
+        TCPTransport(const TC_Endpoint& ep, TC_Epoller* loop): Transport(ep, loop) {}
         /**
          * @brief  检查Socket操作
          *
@@ -195,11 +198,7 @@ namespace bm
     class UDPTransport : public Transport
     {
     public:
-        UDPTransport(const TC_Endpoint& ep, TC_Epoller* loop) : Transport(ep, loop)
-        {
-
-        }
-
+        UDPTransport(const TC_Endpoint& ep, TC_Epoller* loop) : Transport(ep, loop) {}
         /**
          * @brief  检查Socket操作
          *
