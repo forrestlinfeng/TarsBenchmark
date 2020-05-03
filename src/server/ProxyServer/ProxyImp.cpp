@@ -11,6 +11,8 @@ extern ProxyServer g_app;
 //////////////////////////////////////////////////////
 void ProxyImp::initialize()
 {
+    //initialize servant here:
+    //...
 }
 
 //////////////////////////////////////////////////////
@@ -40,8 +42,9 @@ int ProxyImp::startup(const BenchmarkUnit& req, TarsCurrentPtr curr)
         PROC_TRY_EXIT(ret_code, BM_NODE_ERR_CASEMATCH, err_code, 0, err_msg, "link and speed not match")
     }
 
-    task.conf.paralist  = TC_Common::sepstr<string>(req.para_input, "|");
-    task.conf.paravals  = TC_Common::sepstr<string>(req.para_value, "<br>");
+    string main_key = req.servant + "." + req.rpcfunc;
+    task.conf.paralist = TC_Common::sepstr<string>(req.para_input, "|");
+    task.conf.paravals = TC_Common::sepstr<string>(req.para_value, "<br>");
     if (task.conf.paralist.size() != task.conf.paravals.size())
     {
         PROC_TRY_EXIT(ret_code, BM_NODE_ERR_CASEMATCH, err_code, 0, err_msg, "case para not match val")
@@ -72,7 +75,11 @@ int ProxyImp::startup(const BenchmarkUnit& req, TarsCurrentPtr curr)
 
     BenchmarkSummary summary;
     g_app.getSummary(summary);
-    
+    if (summary.task.find(main_key) != summary.task.end())
+    {
+        PROC_TRY_EXIT(ret_code, BM_PROXY_ERR_TASK, err_code, 0, err_msg, "task is running")
+    }
+
     int64_t totol_left_speed = 0;
     int64_t need_speed = req.speed * req.endpoints.size();
     for (auto &node : summary.nodes)
@@ -87,6 +94,7 @@ int ProxyImp::startup(const BenchmarkUnit& req, TarsCurrentPtr curr)
 
     // 处理入参配置
     task.state = TS_IDLE;
+    task.duration = req.duration;
     task.conf.speed   = req.speed;
     task.conf.links   = req.links;
     task.conf.servant = req.servant;
@@ -158,9 +166,16 @@ int ProxyImp::shutdown(const BenchmarkUnit& req, ResultStat& stat, TarsCurrentPt
     }
     
     // 移交线程去执行关闭策略
-    g_app.getResult(main_key, stat);
     summary.task[main_key].state = TS_FINISHED;
     g_app.updateTask(main_key, summary.task[main_key]);
+
+    // 统计最终结果输出
+    if (summary.total_result.find(main_key) != summary.total_result.end())
+    {
+        stat = summary.total_result[main_key];
+        int duration = TNOWMS/1000 - summary.task[main_key].start_time;
+        stat.avg_speed = duration <= 0 ? 0 : stat.total_request / duration;
+    }
 
     PROC_TRY_END(err_msg, ret_code, BM_ERR_PARAM, BM_ERR_PARAM)
     
@@ -206,8 +221,10 @@ int ProxyImp::test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCu
     proto._timeOut  = ep.getTimeout();
 
     int seq = 1;
-    int sendlen = 4 * 1024 * 1024;
-    size_t recvlen = 8 * 1024 * 1024;
+
+    TC_Config &conf = Application::getConfig();
+    int sendlen = TC_Common::strto<int>(conf.get("/benchmark<sendSize>", "4194304"));
+    size_t recvlen = TC_Common::strto<int>(conf.get("/benchmark<recvSize>", "8388608"));
     sendbuf = new char[sendlen];
     recvbuf = new char[recvlen];
     int ret = proto.encode(sendbuf, sendlen, seq);
@@ -224,7 +241,7 @@ int ProxyImp::test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCu
     else
     {
         TC_TCPClient client(ep.getHost(), ep.getPort(), ep.getTimeout());
-        ret = client.sendRecv(sendbuf, (size_t)sendlen, recvbuf, recvlen);
+        ret = client.sendRecv(sendbuf, sendlen, recvbuf, recvlen);
     }
 
     if (ret != 0)

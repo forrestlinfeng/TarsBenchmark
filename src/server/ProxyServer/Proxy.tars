@@ -21,7 +21,8 @@ module bm
         1 optional int        state;                // 状态
         2 optional long       start_time;           // 开始时间
         3 optional long       fetch_time;           // 获取结果时间
-        4 optional map<string, int>  speed_quota;   // 速率配额，key为机器IP
+        4 optional long       duration;             // 压测周期时间
+        5 optional map<string, int>  speed_quota;   // 速率配额，key为机器IP
     };
 
     // 压测信息汇总
@@ -45,6 +46,7 @@ module bm
         6 optional vector<string>   endpoints;      // 压测目标服务器
         7 optional int              links;          // 单个endpoint的链接数
         8 optional int              speed;          // 单个endpoint的速率，最好是links的倍数
+        9 optional int              duration;       // 压测持续时间，单位为秒
     };
     key[BenchmarkUnit, servant, rpcfunc];
 

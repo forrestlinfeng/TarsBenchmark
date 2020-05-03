@@ -26,6 +26,7 @@ module bm
         BM_PROXY_ERR_ENCODE     = -10005,   // 编码失败
         BM_PROXY_ERR_DECODE     = -10006,   // 编码失败
         BM_PROXY_ERR_SOCKET     = -10007,   // 网络失败
+        BM_PROXY_ERR_TASK       = -10008,   // 服务不在运行中
 
         BM_NODE_ERR_RUNNING     = -20001,   // 正在运行
         BM_NODE_ERR_RESOURCE    = -20002,   // 资源不足

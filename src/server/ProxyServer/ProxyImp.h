@@ -52,7 +52,9 @@ public:
      *
      */
     int test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCurrentPtr curr);
-    
+private:
+    int _sendsize;
+    int _recvsize;
 };
 /////////////////////////////////////////////////////
 #endif

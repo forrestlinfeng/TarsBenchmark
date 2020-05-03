@@ -30,6 +30,7 @@ namespace bm
         BM_PROXY_ERR_ENCODE = -10005,
         BM_PROXY_ERR_DECODE = -10006,
         BM_PROXY_ERR_SOCKET = -10007,
+        BM_PROXY_ERR_TASK = -10008,
         BM_NODE_ERR_RUNNING = -20001,
         BM_NODE_ERR_RESOURCE = -20002,
         BM_NODE_ERR_CASEMATCH = -20003,
@@ -50,6 +51,7 @@ namespace bm
             case BM_PROXY_ERR_ENCODE: return "BM_PROXY_ERR_ENCODE";
             case BM_PROXY_ERR_DECODE: return "BM_PROXY_ERR_DECODE";
             case BM_PROXY_ERR_SOCKET: return "BM_PROXY_ERR_SOCKET";
+            case BM_PROXY_ERR_TASK: return "BM_PROXY_ERR_TASK";
             case BM_NODE_ERR_RUNNING: return "BM_NODE_ERR_RUNNING";
             case BM_NODE_ERR_RESOURCE: return "BM_NODE_ERR_RESOURCE";
             case BM_NODE_ERR_CASEMATCH: return "BM_NODE_ERR_CASEMATCH";
@@ -70,6 +72,7 @@ namespace bm
         if(s == "BM_PROXY_ERR_ENCODE")  { e=BM_PROXY_ERR_ENCODE; return 0;}
         if(s == "BM_PROXY_ERR_DECODE")  { e=BM_PROXY_ERR_DECODE; return 0;}
         if(s == "BM_PROXY_ERR_SOCKET")  { e=BM_PROXY_ERR_SOCKET; return 0;}
+        if(s == "BM_PROXY_ERR_TASK")  { e=BM_PROXY_ERR_TASK; return 0;}
         if(s == "BM_NODE_ERR_RUNNING")  { e=BM_NODE_ERR_RUNNING; return 0;}
         if(s == "BM_NODE_ERR_RESOURCE")  { e=BM_NODE_ERR_RESOURCE; return 0;}
         if(s == "BM_NODE_ERR_CASEMATCH")  { e=BM_NODE_ERR_CASEMATCH; return 0;}

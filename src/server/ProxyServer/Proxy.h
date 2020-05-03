@@ -28,7 +28,7 @@ namespace bm
         }
         static string MD5()
         {
-            return "1882d29a6a52bb0c95fba4aeda57c423";
+            return "77dd5b1428a0f6b1a865930616e3040f";
         }
         TaskStat()
         {
@@ -39,6 +39,7 @@ namespace bm
             state = 0;
             start_time = 0;
             fetch_time = 0;
+            duration = 0;
         }
         template<typename WriterT>
         void writeTo(tars::TarsOutputStream<WriterT>& _os) const
@@ -56,9 +57,13 @@ namespace bm
             {
                 _os.write(fetch_time, 3);
             }
+            if (duration != 0)
+            {
+                _os.write(duration, 4);
+            }
             if (speed_quota.size() > 0)
             {
-                _os.write(speed_quota, 4);
+                _os.write(speed_quota, 5);
             }
         }
         template<typename ReaderT>
@@ -69,7 +74,8 @@ namespace bm
             _is.read(state, 1, false);
             _is.read(start_time, 2, false);
             _is.read(fetch_time, 3, false);
-            _is.read(speed_quota, 4, false);
+            _is.read(duration, 4, false);
+            _is.read(speed_quota, 5, false);
         }
         tars::JsonValueObjPtr writeToJson() const
         {
@@ -78,6 +84,7 @@ namespace bm
             p->value["state"] = tars::JsonOutput::writeJson(state);
             p->value["start_time"] = tars::JsonOutput::writeJson(start_time);
             p->value["fetch_time"] = tars::JsonOutput::writeJson(fetch_time);
+            p->value["duration"] = tars::JsonOutput::writeJson(duration);
             p->value["speed_quota"] = tars::JsonOutput::writeJson(speed_quota);
             return p;
         }
@@ -99,6 +106,7 @@ namespace bm
             tars::JsonInput::readJson(state,pObj->value["state"], false);
             tars::JsonInput::readJson(start_time,pObj->value["start_time"], false);
             tars::JsonInput::readJson(fetch_time,pObj->value["fetch_time"], false);
+            tars::JsonInput::readJson(duration,pObj->value["duration"], false);
             tars::JsonInput::readJson(speed_quota,pObj->value["speed_quota"], false);
         }
         void readFromJsonString(const string & str)
@@ -112,6 +120,7 @@ namespace bm
             _ds.display(state,"state");
             _ds.display(start_time,"start_time");
             _ds.display(fetch_time,"fetch_time");
+            _ds.display(duration,"duration");
             _ds.display(speed_quota,"speed_quota");
             return _os;
         }
@@ -122,6 +131,7 @@ namespace bm
             _ds.displaySimple(state, true);
             _ds.displaySimple(start_time, true);
             _ds.displaySimple(fetch_time, true);
+            _ds.displaySimple(duration, true);
             _ds.displaySimple(speed_quota, false);
             return _os;
         }
@@ -130,11 +140,12 @@ namespace bm
         tars::Int32 state;
         tars::Int64 start_time;
         tars::Int64 fetch_time;
+        tars::Int64 duration;
         map<std::string, tars::Int32> speed_quota;
     };
     inline bool operator==(const TaskStat&l, const TaskStat&r)
     {
-        return l.conf == r.conf && l.state == r.state && l.start_time == r.start_time && l.fetch_time == r.fetch_time && l.speed_quota == r.speed_quota;
+        return l.conf == r.conf && l.state == r.state && l.start_time == r.start_time && l.fetch_time == r.fetch_time && l.duration == r.duration && l.speed_quota == r.speed_quota;
     }
     inline bool operator!=(const TaskStat&l, const TaskStat&r)
     {
@@ -286,7 +297,7 @@ namespace bm
         }
         static string MD5()
         {
-            return "780397ba8a571428be8855443bf3cde9";
+            return "bd6bfab8af23ee2c58e6d55c155a8c15";
         }
         BenchmarkUnit()
         {
@@ -302,6 +313,7 @@ namespace bm
             para_output = "";
             links = 0;
             speed = 0;
+            duration = 0;
         }
         template<typename WriterT>
         void writeTo(tars::TarsOutputStream<WriterT>& _os) const
@@ -342,6 +354,10 @@ namespace bm
             {
                 _os.write(speed, 8);
             }
+            if (duration != 0)
+            {
+                _os.write(duration, 9);
+            }
         }
         template<typename ReaderT>
         void readFrom(tars::TarsInputStream<ReaderT>& _is)
@@ -356,6 +372,7 @@ namespace bm
             _is.read(endpoints, 6, false);
             _is.read(links, 7, false);
             _is.read(speed, 8, false);
+            _is.read(duration, 9, false);
         }
         tars::JsonValueObjPtr writeToJson() const
         {
@@ -369,6 +386,7 @@ namespace bm
             p->value["endpoints"] = tars::JsonOutput::writeJson(endpoints);
             p->value["links"] = tars::JsonOutput::writeJson(links);
             p->value["speed"] = tars::JsonOutput::writeJson(speed);
+            p->value["duration"] = tars::JsonOutput::writeJson(duration);
             return p;
         }
         string writeToJsonString() const
@@ -394,6 +412,7 @@ namespace bm
             tars::JsonInput::readJson(endpoints,pObj->value["endpoints"], false);
             tars::JsonInput::readJson(links,pObj->value["links"], false);
             tars::JsonInput::readJson(speed,pObj->value["speed"], false);
+            tars::JsonInput::readJson(duration,pObj->value["duration"], false);
         }
         void readFromJsonString(const string & str)
         {
@@ -411,6 +430,7 @@ namespace bm
             _ds.display(endpoints,"endpoints");
             _ds.display(links,"links");
             _ds.display(speed,"speed");
+            _ds.display(duration,"duration");
             return _os;
         }
         ostream& displaySimple(ostream& _os, int _level=0) const
@@ -424,7 +444,8 @@ namespace bm
             _ds.displaySimple(para_output, true);
             _ds.displaySimple(endpoints, true);
             _ds.displaySimple(links, true);
-            _ds.displaySimple(speed, false);
+            _ds.displaySimple(speed, true);
+            _ds.displaySimple(duration, false);
             return _os;
         }
     public:
@@ -437,10 +458,11 @@ namespace bm
         vector<std::string> endpoints;
         tars::Int32 links;
         tars::Int32 speed;
+        tars::Int32 duration;
     };
     inline bool operator==(const BenchmarkUnit&l, const BenchmarkUnit&r)
     {
-        return l.owner == r.owner && l.servant == r.servant && l.rpcfunc == r.rpcfunc && l.para_input == r.para_input && l.para_value == r.para_value && l.para_output == r.para_output && l.endpoints == r.endpoints && l.links == r.links && l.speed == r.speed;
+        return l.owner == r.owner && l.servant == r.servant && l.rpcfunc == r.rpcfunc && l.para_input == r.para_input && l.para_value == r.para_value && l.para_output == r.para_output && l.endpoints == r.endpoints && l.links == r.links && l.speed == r.speed && l.duration == r.duration;
     }
     inline bool operator!=(const BenchmarkUnit&l, const BenchmarkUnit&r)
     {
