@@ -17,7 +17,6 @@
 #define _TRANSPORT_H_
 
 #include "monitor.h"
-#include "commdefs.h"
 #include "protocol.h"
 #include "proto_factory.h"
 
@@ -26,7 +25,7 @@ namespace bm
     class Transport : TC_ClientSocket
     {
     public:
-        Transport(const TC_Endpoint& ep, TC_Epoller* loop) : _ep(ep), _loop(loop)
+        Transport(const TC_Endpoint& ep, TC_Epoller* loop): _ep(ep), _loop(loop), _monitor(NULL)
         {
             this->close();
             this->init(ep.getHost(), ep.getPort(), ep.getTimeout());
@@ -38,17 +37,25 @@ namespace bm
             close();
         }
 
+                /**
+         * @brief  初始化函数
+         * 
+         * @param monitor   监控指针
+         * @param protocol  协议类指针
+         *
+         */
+        virtual void initialize(Monitor *monitor, Protocol *protocol);
+
         /**
          * @brief  初始化函数
+         * 
+         * @param monitor   监控指针
          * @param proto     协议名称
          * @param argc      参数个数
          * @param argv      参数内容
          *
          */
-        virtual void initialize(const string& proto, int argc, char** argv)
-        {
-            _proto = _factory.get(proto, argc, argv);
-        }
+        virtual void initialize(Monitor *monitor, const string &proto, int argc, char **argv);
 
         /**
          * @brief  关闭资源
@@ -90,13 +97,6 @@ namespace bm
         virtual bool checkTimeOut(int64_t tCurTime);
 
         /**
-         * @brief  获取句柄/socket
-         *
-         */
-        virtual TC_Socket *getSocket() { return TC_ClientSocket::getSocket(); }
-        virtual int getfd() { return this->getSocket()->getfd(); }
-
-        /**
          * @brief  尝试发送
          *
          * @param uniqId 全局唯一ID
@@ -113,9 +113,24 @@ namespace bm
          */
         static void handle(TC_Epoller* loop, int time);
     protected:
+        /**
+         * @brief  获取socket
+         *
+         * @return TC_Socket指针
+         */
+        virtual TC_Socket *getSocket() { return TC_ClientSocket::getSocket(); }
+
+        /**
+         * @brief  获取句柄
+         *
+         * @return int 句柄ID
+         */
+        virtual int getfd() { return this->getSocket()->getfd(); }
+    protected:
         TC_Endpoint             _ep;
         TC_Epoller*             _loop;
         Protocol*               _proto;
+        Monitor*                _monitor;
         ProtoFactory            _factory;
 
         string                  _sendBuffer;
@@ -128,11 +143,7 @@ namespace bm
     class TCPTransport : public Transport
     {
     public:
-        TCPTransport(const TC_Endpoint& ep, TC_Epoller* loop): Transport(ep, loop)
-        {
-
-        }
-
+        TCPTransport(const TC_Endpoint& ep, TC_Epoller* loop): Transport(ep, loop) {}
         /**
          * @brief  检查Socket操作
          *
@@ -183,7 +194,7 @@ namespace bm
             if (rcvLen < 0 && errno != EAGAIN)
             {
                 close();
-                Monitor::getInstance()->report(BM_SOCK_RECV_ERROR);
+                _monitor->report(BM_SOCK_RECV_ERROR);
                 return BM_SOCK_RECV_ERROR;
             }
 
@@ -195,11 +206,7 @@ namespace bm
     class UDPTransport : public Transport
     {
     public:
-        UDPTransport(const TC_Endpoint& ep, TC_Epoller* loop) : Transport(ep, loop)
-        {
-
-        }
-
+        UDPTransport(const TC_Endpoint& ep, TC_Epoller* loop) : Transport(ep, loop) {}
         /**
          * @brief  检查Socket操作
          *
@@ -246,7 +253,7 @@ namespace bm
             if (rcvLen < 0 && errno != EAGAIN)
             {
                 this->close();
-                Monitor::getInstance()->report(BM_SOCK_RECV_ERROR);
+                _monitor->report(BM_SOCK_RECV_ERROR);
                 return BM_SOCK_CONN_ERROR;
             }
 

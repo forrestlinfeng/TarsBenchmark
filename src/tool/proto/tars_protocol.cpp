@@ -788,7 +788,7 @@ namespace bm
 
             ResponsePacket rsp;
             rsp.readFrom(is);
-
+            
             uniqId = rsp.iRequestId;
             return rsp.iRet;
         }

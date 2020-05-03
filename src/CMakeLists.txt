@@ -1,6 +1,9 @@
+include_directories(tool)
+include_directories(tool/proto)
+include_directories(tool/licote)
 
-gen_server(tars tb)
 
-include_directories(./)
-include_directories(proto)
-include_directories(licote)
+add_subdirectory(tool)
+add_subdirectory(server/NodeServer)
+add_subdirectory(server/ProxyServer)
+
