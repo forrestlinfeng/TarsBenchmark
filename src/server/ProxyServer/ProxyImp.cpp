@@ -27,7 +27,7 @@ int ProxyImp::startup(const BenchmarkUnit& req, TarsCurrentPtr curr)
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -114,7 +114,7 @@ int ProxyImp::query(const BenchmarkUnit& req, ResultStat& stat, TarsCurrentPtr c
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -128,9 +128,9 @@ int ProxyImp::query(const BenchmarkUnit& req, ResultStat& stat, TarsCurrentPtr c
     {
         PROC_TRY_EXIT(ret_code, BM_PROXY_ERR_NOTFIND, err_code, 0, err_msg, "not find interface")
     }
-    
+
     PROC_TRY_END(err_msg, ret_code, BM_ERR_PARAM, BM_ERR_PARAM)
-    
+
     if (ret_code != 0)
     {
         FDLOG(__FUNCTION__) << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg << "|" << logTars(req) << "|" << curr->getIp() << endl;
@@ -147,10 +147,11 @@ int ProxyImp::shutdown(const BenchmarkUnit& req, ResultStat& stat, TarsCurrentPt
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
+    string main_key = req.servant + "." + req.rpcfunc;
     if (req.servant.empty() || req.rpcfunc.empty())
     {
         PROC_TRY_EXIT(ret_code, BM_ERR_PARAM, err_code, 0, err_msg, "check param")
@@ -158,13 +159,13 @@ int ProxyImp::shutdown(const BenchmarkUnit& req, ResultStat& stat, TarsCurrentPt
 
     BenchmarkSummary summary;
     g_app.getSummary(summary);
-    string main_key = req.servant + "." + req.rpcfunc;
-    if (summary.task.find(main_key) == summary.task.end() || 
-        summary.task[main_key].state != TS_RUNNING)
+
+    auto task = summary.task.find(main_key);
+    if (task == summary.task.end() || task->second.state != TS_RUNNING)
     {
         PROC_TRY_EXIT(ret_code, BM_PROXY_ERR_RUNNING, err_code, 0, err_msg, "task not running")
     }
-    
+
     // 移交线程去执行关闭策略
     summary.task[main_key].state = TS_FINISHED;
     g_app.updateTask(main_key, summary.task[main_key]);
@@ -178,7 +179,7 @@ int ProxyImp::shutdown(const BenchmarkUnit& req, ResultStat& stat, TarsCurrentPt
     }
 
     PROC_TRY_END(err_msg, ret_code, BM_ERR_PARAM, BM_ERR_PARAM)
-    
+
     FDLOG("info") << __FUNCTION__ << "|" << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg << "|req:" << logTars(req) << "|" << logTars(stat) << "|" << curr->getIp() << endl;
 
     return ret_code;
@@ -205,7 +206,7 @@ int ProxyImp::test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCu
     proto._function = req.rpcfunc;
     proto._paraList = TC_Common::sepstr<string>(req.para_input, "|");
     proto._paraVals = TC_Common::sepstr<string>(req.para_value, "<br>");
-    vector<string> paraOut = TC_Common::sepstr<string>(req.para_output, "<br>");
+    vector<string> paraOut = TC_Common::sepstr<string>(req.para_output, "|");
     if (proto._paraList.size() != proto._paraVals.size())
     {
         PROC_TRY_EXIT(ret_code, BM_NODE_ERR_CASEMATCH, err_code, 0, errmsg, "case para not match val")
@@ -221,7 +222,7 @@ int ProxyImp::test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCu
     proto._timeOut  = ep.getTimeout();
 
     int seq = 1;
-
+    int req_size = proto._paraVals.size();
     TC_Config &conf = Application::getConfig();
     int sendlen = TC_Common::strto<int>(conf.get("/benchmark<sendSize>", "4194304"));
     size_t recvlen = TC_Common::strto<int>(conf.get("/benchmark<recvSize>", "8388608"));
@@ -232,7 +233,7 @@ int ProxyImp::test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCu
     {
         PROC_TRY_EXIT(ret_code, BM_PROXY_ERR_ENCODE, err_code, ret, errmsg, "encode fail")
     }
-    
+
     if (ep.isTcp())
     {
         TC_TCPClient client(ep.getHost(), ep.getPort(), ep.getTimeout());
@@ -241,14 +242,13 @@ int ProxyImp::test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCu
     else
     {
         TC_TCPClient client(ep.getHost(), ep.getPort(), ep.getTimeout());
-        ret = client.sendRecv(sendbuf, sendlen, recvbuf, recvlen);
+        ret = client.sendRecv(sendbuf, (size_t)sendlen, recvbuf, recvlen);
     }
 
     if (ret != 0)
     {
         PROC_TRY_EXIT(ret_code, BM_PROXY_ERR_SOCKET, err_code, ret, errmsg, "socket sendrecv fail")
     }
-
 
     TarsInputStream<BufferReader> is, isf;
     is.setBuffer(recvbuf + 4, recvlen - 4);
@@ -257,15 +257,19 @@ int ProxyImp::test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCu
     res.readFrom(is);
     isf.setBuffer(res.sBuffer);
     ret_code = res.iRet;
-    for (size_t i = 0; i < paraOut.size(); i++)
+    if (ret_code == 0)
     {
-        rsp += proto.decode(isf, paraOut[i], i+1, false);
+        ret_code = TC_Common::strto<int>(proto.decode(isf, "int", 0, false));
+        for (size_t i = 0; i < paraOut.size(); i++)
+        {
+            rsp += proto.decode(isf, paraOut[i], i+req_size+1, false) + "<br>";
+        }
     }
 
     PROC_TRY_END(errmsg, ret_code, BM_PROXY_ERR_DECODE, BM_PROXY_ERR_DECODE)
     DELETE_POINT(sendbuf)
     DELETE_POINT(recvbuf)
-    
+
     FDLOG(__FUNCTION__) << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << errmsg << "|" << "|req:" << logTars(req) << "|out:" << rsp << "|" << curr->getIp() << endl;
 
     return ret_code;

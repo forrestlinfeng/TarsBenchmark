@@ -14,6 +14,7 @@ void ProxyServer::initialize()
 
     // 启动一个watch线程，防止压测线程长时间空跑
     _runflag = true;
+    _next_scan_time = 0;
     auto fw = std::bind(&ProxyServer::daemon, this);
     _watchdog.init(1);
     _watchdog.start();
@@ -75,14 +76,14 @@ void ProxyServer::daemon()
         PROC_TRY_BEGIN
 
         // 扫描机器列表
-        scanActiveNode(f_start);
+        scanActiveNode(cur_time);
 
         // 扫描任务列表
         for (auto &it : _summary.task)
         {
             switch (it.second.state)
             {
-                case TS_IDLE: 
+                case TS_IDLE:
                 {
                     map<string, int> speed_quota;
                     TaskConf tconf = it.second.conf;
@@ -95,6 +96,7 @@ void ProxyServer::daemon()
                         tconf.speed = cost_speed / tconf.endpoints.size();
                         if (tconf.speed > 0 && tconf.links > 0)
                         {
+                            _next_scan_time = cur_time + 3;
                             startupNodeTask(itt->first, tconf);
 
                             left_speed -= cost_speed;
@@ -112,7 +114,7 @@ void ProxyServer::daemon()
                     _summary.total_result[it.first].time_stamp = cur_time;
                     break;
                 }
-                case TS_RUNNING: 
+                case TS_RUNNING:
                 {
                     // 采集任务状态
                     for (auto & item : it.second.speed_quota)
@@ -128,7 +130,7 @@ void ProxyServer::daemon()
                     }
 
                     // 超时退出机制
-                    int left_time = it.second.duration == 0 ? (it.second.fetch_time + 300 - cur_time) : 
+                    int left_time = it.second.duration == 0 ? (it.second.fetch_time + 300 - cur_time) :
                                     (it.second.start_time + it.second.duration - cur_time);
                     if (left_time < 0)
                     {
@@ -137,11 +139,15 @@ void ProxyServer::daemon()
                     }
                     break;
                 }
-                default: 
+                default:
                 {
                     // 执行关闭逻辑
-                    shutdownNodeTask(it.first, it.second.conf);
-                    
+                    _next_scan_time = cur_time + 3;
+                    for (auto & item : it.second.speed_quota)
+                    {
+                        shutdownNodeTask(item.first, it.second.conf);
+                    }
+
                     Lock lock(*this);
                     _summary.task.erase(it.first);
                     _summary.result.erase(it.first);
@@ -152,7 +158,7 @@ void ProxyServer::daemon()
         }
 
         PROC_TRY_END(err_msg, ret_code, BM_EXCEPTION, BM_EXCEPTION)
-        
+
         if (ret_code != 0)
         {
             FDLOG(__FUNCTION__) << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg << "|"  << endl;
@@ -167,14 +173,14 @@ void ProxyServer::daemon()
     FDLOG(__FUNCTION__) << "thread exit" << endl;
 }
 
-void ProxyServer::scanActiveNode(int64_t cur_time)
+void ProxyServer::scanActiveNode(long cur_time, bool refresh)
 {
     try
     {
-        static int64_t last_time = 0;
-        if (abs(cur_time - last_time) > 60000)
+        if (cur_time >= _next_scan_time || refresh)
         {
-            last_time = cur_time;
+            _next_scan_time = cur_time + 60;
+
             map<string, NodePrx> nodeprx;
             map<string, NodeStat> nodestat;
             TC_Config &conf = Application::getConfig();
@@ -185,7 +191,7 @@ void ProxyServer::scanActiveNode(int64_t cur_time)
                 NodePrx prx;  NodeStat stat;
                 string obj_name = node_obj + "@" + eps[i].toString();
                 Application::getCommunicator()->stringToProxy<NodePrx>(obj_name, prx);
-                
+
                 prx->capacity(stat);
                 nodeprx[eps[i].getHost()]  = prx;
                 nodestat[eps[i].getHost()] = stat;
@@ -208,7 +214,7 @@ void ProxyServer::scanActiveNode(int64_t cur_time)
                     TaskConf task;
                     task.servant = ite->servant;
                     task.rpcfunc = ite->rpcfunc;
-                    shutdownNodeTask(it.first, task); 
+                    shutdownNodeTask(it.first, task);
 
                     Lock lock(*this);
                     ite = it.second.executors.erase(ite);
@@ -235,7 +241,7 @@ int ProxyServer::startupNodeTask(const string& ipaddr, const TaskConf& task)
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -258,7 +264,7 @@ int ProxyServer::shutdownNodeTask(const string& ipaddr, const TaskConf& task)
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -283,7 +289,7 @@ int ProxyServer::queryNodeTask(const string& ipaddr, const TaskConf& task, Resul
     int err_code = 0;
     string err_msg("");
     QueryRsp rsp;
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -310,9 +316,11 @@ bool ProxyServer::getResult(const string &key, ResultStat& stat)
     if (task != _summary.task.end() && result != _summary.result.end())
     {
         stat = result->second;
-        int duration = TNOW - task->second.start_time;
+        int duration = TNOW - task->second.fetch_time;
         stat.avg_speed = duration <= 0 ? 0 : stat.total_request / duration;
         result->second.resetDefautlt();
+        result->second.ret_map.clear();
+        result->second.cost_map.clear();
         result->second.time_stamp = TNOW;
         task->second.fetch_time = TNOW;
         return true;
@@ -331,6 +339,7 @@ void ProxyServer::updateTask(const string &key, const TaskStat& task)
     Lock lock(*this);
     _summary.task[key] = task;
 }
+
 /////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {

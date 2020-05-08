@@ -13,7 +13,6 @@
 */
 #include "BenchmarkThread.h"
 
-
 //////////////////////////////////////////////////////////////////////////
 BenchmarkThread::~BenchmarkThread()
 {
@@ -61,10 +60,10 @@ void BenchmarkThread::do_task()
     int err_code = 0;
     string err_msg("");
     vector<Transport*> conn_list;
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
-    
+
     TaskConf taskconf = _taskconf;
     size_t connections = taskconf.endpoints.size() * taskconf.links;
     if (taskconf.runflag == 0 || connections == 0)
@@ -139,7 +138,7 @@ void BenchmarkThread::do_task()
     {
         delete conn_list[i];
     }
-    
+
     if (ret_code != 0)
     {
         FDLOG(__FUNCTION__) << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg << "|" << logTars(_taskconf) << endl;
