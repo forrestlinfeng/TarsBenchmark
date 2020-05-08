@@ -43,6 +43,7 @@ namespace bm
          * @param buf  数据包指针
          * @param len  网络数据包长度
          *
+         * @return int =0报文不完整; >0:实际报文长度; <0:出错
          */
         virtual int input(const char *buf, size_t len);
 

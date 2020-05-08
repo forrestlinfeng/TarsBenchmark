@@ -97,7 +97,7 @@ namespace bm
         /**
          * @brief  获得类型
          *
-         * @param type  数据类型
+         * @param type  业务数据实例
          *
          * @return  string
          */
@@ -151,7 +151,7 @@ namespace bm
          * @return 0成功, 其他失败
          */
          int parseCaseFile(const string& sFileName);
-    private:
+    public:
         int             _timeOut;
         string          _servant;
         string          _function;
