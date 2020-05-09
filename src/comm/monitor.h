@@ -116,11 +116,10 @@ namespace bm
         int initialize(int iShmKey = 0x19453959, int iShmSize = 1024 * 1024);
 
         /**
-         * @brief  析构
+         * @brief  清除数据
          *
          */
-        void destroy();
-
+        void clear();
 
         /**
          * @brief  接口上报

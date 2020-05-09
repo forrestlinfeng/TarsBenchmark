@@ -39,7 +39,7 @@ public:
 
     /**
      * @brief 函数注释
-     *  
+     *
      * @param  shm_key       监控器的共享内存KEY
      * @param  shm_size      监控器的共享内存长度
      */
@@ -47,34 +47,34 @@ public:
 
     /**
      * @brief 获取当前线程的监控器
-     *  
-     * @return Monitor       
+     *
+     * @return Monitor
      */
     Monitor* getMonitor() { return _monitor; }
 
     /**
      * @brief 获取当前任务配置
-     *  
-     * @return Monitor       
+     *
+     * @return Monitor
      */
     TaskConf& getTaskConf() { return _taskconf; }
 
 
     /**
      * @brief 轮询函数
-     *     
+     *
      */
     virtual void run();
 
     /**
      * @brief 结束线程
-     *     
+     *
      */
     void terminate();
 protected:
     /**
      * @brief 执行压测
-     *     
+     *
      */
     void do_task();
 

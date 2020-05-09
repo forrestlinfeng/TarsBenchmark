@@ -79,20 +79,20 @@ void ProxyServer::daemon()
         scanActiveNode(cur_time);
 
         // 扫描任务列表
-        for (auto &it : _summary.task)
+        for (auto it = _summary.task.begin(); it != _summary.task.end(); )
         {
-            switch (it.second.state)
+            switch (it->second.state)
             {
                 case TS_IDLE:
                 {
                     map<string, int> speed_quota;
-                    TaskConf tconf = it.second.conf;
+                    TaskConf tconf = it->second.conf;
                     Int32 left_speed  = tconf.speed * tconf.endpoints.size();
                     Int32 totol_speed = tconf.speed * tconf.endpoints.size();
                     for(auto itt = _summary.nodes.begin(); itt != _summary.nodes.end() && left_speed > 0; itt++)
                     {
                         Int32 cost_speed = std::min(itt->second.left_speed, left_speed);
-                        tconf.links = it.second.conf.links * cost_speed / totol_speed;
+                        tconf.links = it->second.conf.links * cost_speed / totol_speed;
                         tconf.speed = cost_speed / tconf.endpoints.size();
                         if (tconf.speed > 0 && tconf.links > 0)
                         {
@@ -106,36 +106,36 @@ void ProxyServer::daemon()
                     }
 
                     Lock lock(*this);
-                    it.second.state = TS_RUNNING;
-                    it.second.start_time = cur_time;
-                    it.second.fetch_time = cur_time;
-                    it.second.speed_quota = speed_quota;
-                    _summary.result[it.first].time_stamp = cur_time;
-                    _summary.total_result[it.first].time_stamp = cur_time;
+                    it->second.state = TS_RUNNING;
+                    it->second.start_time = cur_time;
+                    it->second.fetch_time = cur_time;
+                    it->second.speed_quota = speed_quota;
+                    _summary.result[it->first].time_stamp = cur_time;
+                    _summary.total_result[it->first].time_stamp = cur_time;
                     break;
                 }
                 case TS_RUNNING:
                 {
                     // 采集任务状态
-                    for (auto & item : it.second.speed_quota)
+                    for (auto & item : it->second.speed_quota)
                     {
                         ResultStat stat;
-                        int ret = queryNodeTask(item.first, it.second.conf, stat);
+                        int ret = queryNodeTask(item.first, it->second.conf, stat);
                         if (ret == 0)
                         {
                             Lock lock(*this);
-                            _summary.result[it.first] += stat;
-                            _summary.total_result[it.first] += stat;
+                            _summary.result[it->first] += stat;
+                            _summary.total_result[it->first] += stat;
                         }
                     }
 
                     // 超时退出机制
-                    int left_time = it.second.duration == 0 ? (it.second.fetch_time + 300 - cur_time) :
-                                    (it.second.start_time + it.second.duration - cur_time);
+                    int left_time = it->second.duration == 0 ? (it->second.fetch_time + 300 - cur_time) :
+                                    (it->second.start_time + it->second.duration - cur_time);
                     if (left_time < 0)
                     {
                         Lock lock(*this);
-                        it.second.state = TS_FINISHED;
+                        it->second.state = TS_FINISHED;
                     }
                     break;
                 }
@@ -143,18 +143,19 @@ void ProxyServer::daemon()
                 {
                     // 执行关闭逻辑
                     _next_scan_time = cur_time + 3;
-                    for (auto & item : it.second.speed_quota)
+                    for (auto & item : it->second.speed_quota)
                     {
-                        shutdownNodeTask(item.first, it.second.conf);
+                        shutdownNodeTask(item.first, it->second.conf);
                     }
 
                     Lock lock(*this);
-                    _summary.task.erase(it.first);
-                    _summary.result.erase(it.first);
-                    _summary.total_result.erase(it.first);
-                    break;
+                    _summary.total_result.erase(it->first);
+                    _summary.result.erase(it->first);
+                    it = _summary.task.erase(it);
+                    continue;
                 }
             }
+            it++;
         }
 
         PROC_TRY_END(err_msg, ret_code, BM_EXCEPTION, BM_EXCEPTION)

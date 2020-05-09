@@ -49,6 +49,12 @@ namespace bm
         return 0;
     }
 
+    void Monitor::clear()
+    {
+        vector<IntfStat> vis;
+        fetch(vis);
+    }
+
     void Monitor::report(int retCode)
     {
         retCount[retCode] += 1;
@@ -163,6 +169,8 @@ namespace bm
         }
         return itemList.size() > 0;
     }
+
+
 
     double Monitor::calcPercent(size_t percent)
     {

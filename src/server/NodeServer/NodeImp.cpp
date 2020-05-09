@@ -15,7 +15,7 @@ void NodeImp::initialize()
         {
             throw TC_Exception("imp thread must equal one");
         }
-        
+
         TC_Config &conf = Application::getConfig();
         _total_threads = TC_Common::strto<int>(conf.get("/benchmark<totalThreads>", TC_Common::tostr(getProcNum())));
         _max_speed_per_thread = TC_Common::strto<int>(conf.get("/benchmark<maxtThreadSpeed>", "25000"));
@@ -64,7 +64,7 @@ int NodeImp::startup(const TaskConf& req, TarsCurrentPtr curr)
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -121,9 +121,9 @@ int NodeImp::startup(const TaskConf& req, TarsCurrentPtr curr)
             tconf.servant = req.servant;
             tconf.rpcfunc = req.rpcfunc;
             tconf.paralist = req.paralist;       // 压测的入参配置
-            tconf.paravals = req.paralist;       // 压测的入参值
+            tconf.paravals = req.paravals;       // 压测的入参值
             tconf.endpoints = req.endpoints;     // 压测目标服务器
-            tconf.links = req.links/need_thread;   // 压测目标服务器
+            tconf.links = req.links / need_thread;   // 压测目标服务器
             tconf.speed = threadspeed / req.endpoints.size();
             tconf.runflag = TS_RUNNING;
             left_speed -= threadspeed;
@@ -131,8 +131,8 @@ int NodeImp::startup(const TaskConf& req, TarsCurrentPtr curr)
     }
 
     PROC_TRY_END(err_msg, ret_code, BM_EXCEPTION, BM_EXCEPTION)
-    
-    FDLOG("info") << __FUNCTION__ << "|" << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg 
+
+    FDLOG("info") << __FUNCTION__ << "|" << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg
                   << "|req:" << logTars(req) << "|" << curr->getIp()<< endl;
     return ret_code;
 }
@@ -142,7 +142,7 @@ int NodeImp::shutdown(const TaskConf& req, QueryRsp& rsp, TarsCurrentPtr curr)
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -164,7 +164,7 @@ int NodeImp::shutdown(const TaskConf& req, QueryRsp& rsp, TarsCurrentPtr curr)
 
     PROC_TRY_END(err_msg, ret_code, BM_EXCEPTION, BM_EXCEPTION)
 
-    FDLOG("info") << __FUNCTION__ << "|" << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg 
+    FDLOG("info") << __FUNCTION__ << "|" << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg
                   << "|req:" << logTars(req) << "|rsp:" << logTars(rsp) << "|" << curr->getIp()<< endl;
     return ret_code;
 }
@@ -174,7 +174,7 @@ int NodeImp::query(const TaskConf& req, QueryRsp& rsp, TarsCurrentPtr curr)
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -182,7 +182,7 @@ int NodeImp::query(const TaskConf& req, QueryRsp& rsp, TarsCurrentPtr curr)
     {
         PROC_TRY_EXIT(ret_code, BM_ERR_PARAM, err_code, 0, err_msg, "check param")
     }
-    
+
     IntfStat stat_final;
     map<int, int> ret_final;
     for(size_t i = 0; i < _thread_pool.size(); i++)
@@ -226,7 +226,7 @@ int NodeImp::query(const TaskConf& req, QueryRsp& rsp, TarsCurrentPtr curr)
         rsp.stat.cost_map[i] = stat_final.costTimes[i];
     }
     PROC_TRY_END(err_msg, ret_code, BM_EXCEPTION, BM_EXCEPTION)
-    
+
     if (ret_code != 0)
     {
         FDLOG(__FUNCTION__) << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg << "|req:" << logTars(req) << "|rsp:" << logTars(rsp) << endl;
@@ -243,7 +243,7 @@ int NodeImp::capacity(NodeStat &stats, TarsCurrentPtr curr)
     int ret_code = 0;
     int err_code = 0;
     string err_msg("");
-    
+
     Int64 f_start = TNOWMS;
     PROC_TRY_BEGIN
 
@@ -286,7 +286,7 @@ int NodeImp::capacity(NodeStat &stats, TarsCurrentPtr curr)
     stats.left_speed   = stats.left_threads * _max_speed_per_thread;
 
     PROC_TRY_END(err_msg, ret_code, BM_EXCEPTION, BM_EXCEPTION)
-    
+
     if (ret_code != 0)
     {
         FDLOG(__FUNCTION__) << (TNOWMS - f_start) << "|" << ret_code << "|" << err_code << "|" << err_msg << "|" << logTars(stats) << endl;

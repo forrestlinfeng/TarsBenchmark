@@ -99,10 +99,11 @@ void BenchmarkThread::do_task()
         proto._timeOut  = ep.getTimeout();
     }
 
-    // 准备启动压测
+    // 清理缓存区数据, 准备启动压测
+    getMonitor()->clear();
     int64_t next_send_time = 0;
     static std::atomic<int64_t> seq_num{0};
-    int64_t interval = taskconf.speed == 0 ? 0 : (1000000 * taskconf.links) / taskconf.speed;
+    int64_t interval = taskconf.speed == 0 ? 0 : 1000000 * int64_t(taskconf.links) / taskconf.speed;
     while (true)
     {
         seq_num = seq_num < 0 ? 1 : ++seq_num;

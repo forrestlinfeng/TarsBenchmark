@@ -13,7 +13,7 @@
 */
 module bm
 {
-    enum BMErrCode 
+    enum BMErrCode
     {
         BM_SUCC                 = 0,
         BM_EXCEPTION            = -1,
@@ -33,10 +33,10 @@ module bm
         BM_NODE_ERR_CASEMATCH   = -20003,   // 用例参数和内容不匹配
         BM_NODE_ERR_CONNECTION  = -20004,   // 链接数设置不合理(整数倍，且不要超过500倍)
         BM_NODE_ERR_ENDPOINT    = -20005,   // 目标服务器配置不正确
- 
+
     };
 
-    enum TaskState 
+    enum TaskState
     {
         TS_IDLE                 = 0,
         TS_RUNNING              = 1,
@@ -60,14 +60,14 @@ module bm
        11 optional  double               p90_time  = 0.0;
        12 optional  long                 send_bytes;
        13 optional  long                 recv_bytes;
-       14 optional  int                  avg_speed; 
+       14 optional  int                  avg_speed;
     };
 
     // 最小值形体结构
     struct ExecItem
     {
         0 optional string           servant;
-        1 optional string           rpcfunc;  
+        1 optional string           rpcfunc;
         2 optional int              threads;  // 占用压测进程单元
         3 optional int              links;    // 当前压测链接数
         4 optional int              speed;    // 当前压测速率
@@ -86,7 +86,7 @@ module bm
     key[NodeStat, ipaddr];
 
     // query接口结构体
-    struct QueryRsp 
+    struct QueryRsp
     {
         0 optional ResultStat           stat;
         1 optional string               ipaddr;
@@ -134,4 +134,4 @@ module bm
         int capacity(out NodeStat stats);
     };
 
-}; 
+};
