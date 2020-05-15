@@ -44,7 +44,7 @@ int ProxyImp::startup(const BenchmarkUnit& req, TarsCurrentPtr curr)
 
     string main_key = req.servant + "." + req.rpcfunc;
     task.conf.paralist = TC_Common::sepstr<string>(req.para_input, "|");
-    task.conf.paravals = TC_Common::sepstr<string>(req.para_value, "<br>");
+    task.conf.paravals = TC_Common::sepstr<string>(req.para_value, "\n");
     if (task.conf.paralist.size() != task.conf.paravals.size())
     {
         PROC_TRY_EXIT(ret_code, BM_NODE_ERR_CASEMATCH, err_code, 0, err_msg, "case para not match val")
@@ -213,7 +213,7 @@ int ProxyImp::test(const BenchmarkUnit& req, string& rsp, string& errmsg, TarsCu
     proto._servant  = req.servant;
     proto._function = req.rpcfunc;
     proto._paraList = TC_Common::sepstr<string>(req.para_input, "|");
-    proto._paraVals = TC_Common::sepstr<string>(req.para_value, "<br>");
+    proto._paraVals = TC_Common::sepstr<string>(req.para_value, "\n");
     vector<string> paraOut = TC_Common::sepstr<string>(req.para_output, "|");
     if (proto._paraList.size() != proto._paraVals.size())
     {

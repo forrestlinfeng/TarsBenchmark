@@ -145,7 +145,7 @@ inline string map2str(const map<int, int>& mm)
 
 /**
  * 通用模板方法: Tars对象T序列化
- * 
+ *
  * @param t 类型T的对象
  * @return 字符串
  */
@@ -161,7 +161,7 @@ template<typename T> string tostring(const T& t)
 
 /**
  * 通用模板方法: Tars对象T结构化
- * 
+ *
  * @param t 字符串
  * @return 类型T的对象
  */
@@ -177,7 +177,7 @@ template<typename T> T& toObj(const string& s, T& t)
 
 /**
  * 通用模板方法: Tars对象日志化打印
- * 
+ *
  * @param t 类型T的对象
  * @return string
  */

@@ -34,9 +34,9 @@ namespace bm
         string type_;
     };
 
-    #define LABEL_ASCII_2C string({0x2,0x2c,0x3})
-    #define LABEL_ASCII_3C string({0x2,0x3c,0x3})
-    #define LABEL_ASCII_3E string({0x2,0x3e,0x3})
+    #define LABEL_ASCII_2C string({0x2,0x1f,0x3})   // 替换,
+    #define LABEL_ASCII_3C string({0x2,0x1c,0x3})   // 替换<
+    #define LABEL_ASCII_3E string({0x2,0x1e,0x3})   // 替换>
 
     class tarsProtocol : public Protocol
     {
