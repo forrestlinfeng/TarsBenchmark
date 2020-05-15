@@ -33,7 +33,7 @@ module bm
         BM_NODE_ERR_CASEMATCH   = -20003,   // 用例参数和内容不匹配
         BM_NODE_ERR_CONNECTION  = -20004,   // 链接数设置不合理(整数倍，且不要超过500倍)
         BM_NODE_ERR_ENDPOINT    = -20005,   // 目标服务器配置不正确
-
+        BM_NODE_ERR_RPCCALL     = -20006,   // 目标服务器调用失败
     };
 
     enum TaskState

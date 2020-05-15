@@ -73,8 +73,8 @@ namespace bm
             succCount  += src.succCount;
             totalSendBytes += src.totalSendBytes;
             totalRecvBytes += src.totalRecvBytes;
-            maxTime = std::max(src.maxTime, maxTime);
-            minTime = std::min(src.minTime, minTime);
+            maxTime = std::max<double>(src.maxTime, maxTime);
+            minTime = std::min<double>(src.minTime, minTime);
             return *this;
         }
 

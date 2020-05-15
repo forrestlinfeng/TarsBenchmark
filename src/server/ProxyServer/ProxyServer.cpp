@@ -36,9 +36,9 @@ inline ResultStat& operator+=(ResultStat& l, ResultStat& r)
     uint64_t total_request = l.total_request + r.total_request;
     if (total_request > 0)
     {
-        l.p90_time  = (l.p90_time*total_request + r.p90_time*r.total_request) / total_request;
-        l.p99_time  = (l.p99_time*total_request + r.p99_time*r.total_request) / total_request;
-        l.p999_time = (l.p999_time*total_request + r.p999_time*r.total_request) / total_request;
+        l.p90_time  = (l.p90_time*l.total_request + r.p90_time*r.total_request) / total_request;
+        l.p99_time  = (l.p99_time*l.total_request + r.p99_time*r.total_request) / total_request;
+        l.p999_time = (l.p999_time*l.total_request + r.p999_time*r.total_request) / total_request;
     }
 
     for (auto & it : r.ret_map)
@@ -57,8 +57,8 @@ inline ResultStat& operator+=(ResultStat& l, ResultStat& r)
     l.total_time    += r.total_time;
     l.send_bytes    += r.send_bytes;
     l.recv_bytes    += r.recv_bytes;
-    l.max_time = std::max(l.max_time, r.max_time);
-    l.min_time = std::min(l.min_time, r.min_time);
+    l.max_time = std::max<double>(l.max_time, r.max_time);
+    l.min_time = std::min<double>(l.min_time, r.min_time);
     return l;
 }
 

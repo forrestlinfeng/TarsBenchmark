@@ -39,7 +39,7 @@ int ProxyImp::startup(const BenchmarkUnit& req, TarsCurrentPtr curr)
 
     if ((req.speed % req.links != 0) || (req.speed / req.links) > 1000)
     {
-        PROC_TRY_EXIT(ret_code, BM_NODE_ERR_CASEMATCH, err_code, 0, err_msg, "link and speed not match")
+        PROC_TRY_EXIT(ret_code, BM_NODE_ERR_CONNECTION, err_code, 0, err_msg, "link and speed not match")
     }
 
     string main_key = req.servant + "." + req.rpcfunc;
@@ -72,6 +72,14 @@ int ProxyImp::startup(const BenchmarkUnit& req, TarsCurrentPtr curr)
     {
         PROC_TRY_EXIT(ret_code, BM_NODE_ERR_ENDPOINT, err_code, req.endpoints.size(), err_msg, "err endpoint")
     }
+
+    /* 暂时先屏蔽一下
+    string rsp_msg("");
+    if (this->test(req, rsp_msg, err_msg, curr) != 0)
+    {
+        PROC_TRY_EXIT(ret_code, BM_NODE_ERR_ENDPOINT, err_code, req.endpoints.size(), err_msg, "err endpoint")
+    }
+    */
 
     BenchmarkSummary summary;
     g_app.getSummary(summary);

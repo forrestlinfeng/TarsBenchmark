@@ -34,6 +34,10 @@ namespace bm
         string type_;
     };
 
+    #define LABEL_ASCII_2C string({0x2,0x2c,0x3})
+    #define LABEL_ASCII_3C string({0x2,0x3c,0x3})
+    #define LABEL_ASCII_3E string({0x2,0x3e,0x3})
+
     class tarsProtocol : public Protocol
     {
         DECLARE_DYNCREATE(tarsProtocol)
@@ -151,6 +155,25 @@ namespace bm
          * @return 0成功, 其他失败
          */
          int parseCaseFile(const string& sFileName);
+
+        /**
+         * @brief  转义字符
+         *
+         * @param sSrc 源串
+         *
+         * @return 目标串
+         */
+         string escapeStr(const string& sSrc);
+
+        /**
+         * @brief  反转义字符
+         *
+         * @param sSrc 源串
+         *
+         * @return 目标串
+         */
+         string unescapeStr(const string& sSrc);
+
     public:
         int             _timeOut;
         string          _servant;

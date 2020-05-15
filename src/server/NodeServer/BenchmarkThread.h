@@ -55,7 +55,7 @@ public:
     /**
      * @brief 获取当前任务配置
      *
-     * @return Monitor
+     * @return TaskConf
      */
     TaskConf& getTaskConf() { return _taskconf; }
 
@@ -79,7 +79,7 @@ protected:
     void do_task();
 
 private:
-    bool        _terminate;                // 线程结束标志
+    bool        _terminate;         // 线程结束标志
     Monitor*    _monitor;           // 监控器
     TaskConf    _taskconf;          // 线程安全考虑
 };
