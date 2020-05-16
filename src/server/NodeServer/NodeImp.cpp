@@ -18,7 +18,7 @@ void NodeImp::initialize()
 
         TC_Config &conf = Application::getConfig();
         _total_threads = TC_Common::strto<int>(conf.get("/benchmark<totalThreads>", TC_Common::tostr(getProcNum())));
-        _max_speed_per_thread = TC_Common::strto<int>(conf.get("/benchmark<maxtThreadSpeed>", "25000"));
+        _max_speed_per_thread = TC_Common::strto<int>(conf.get("/benchmark<maxThreadSpeed>", "25000"));
         int shm_base = TC_Common::strto<int>(conf.get("/benchmark<shmBase>", "202005010"));
         int shm_size = TC_Common::strto<int>(conf.get("/benchmark<shmSize>", "1048576"));
         for (int i = 0; i < _total_threads; i++)
