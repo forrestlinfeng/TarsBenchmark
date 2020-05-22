@@ -121,12 +121,6 @@ int initialize(int argc, char* argv[])
 */
 int run(int seqNum, int argc, char* argv[])
 {
-    /*
-    tarsjsonProtocol p1;
-    tarsProtocol p2;
-    httpProtocol p3;
-    */
-
     // 事件初始化
     TC_Epoller eLoop;
     eLoop.create(MAX_FD);
