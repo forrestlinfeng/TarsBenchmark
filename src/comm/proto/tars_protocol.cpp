@@ -38,7 +38,7 @@ namespace bm
     int tarsProtocol::initialize(int argc, char** argv)
     {
         // 支持命令
-        licote_option_add("-S", "o",   "tars servant");
+        licote_option_add("-S", NULL,  "tars servant");
         licote_option_add("-M", NULL,  "tars single interface name");
         licote_option_add("-C", NULL,  "tars single interface case");
         licote_option_init(argc, argv);
@@ -278,14 +278,14 @@ namespace bm
         return vs;
     }
 
-    long tarsProtocol::genRandomValue(const string& range_min, const string& range_max)
+    long tarsProtocol::genRandomValue(const string& rmin, const string& rmax)
     {
-        long max = TC_Common::strto<long>(range_max);
-        long min = TC_Common::strto<long>(range_min);
+        long max = TC_Common::strto<long>(rmax);
+        long min = TC_Common::strto<long>(rmin);
         return (long)(rand() % (max - min + 1) + min);
     }
 
-    string tarsProtocol::genRandomValue(const string& v, bool isIntegal)
+    string tarsProtocol::genRandomValue(const string& v, bool is_int)
     {
         string vv = unescapeStr(v);
         string::size_type l = vv.find_first_of('[');
@@ -303,7 +303,7 @@ namespace bm
             return nv;
         }
 
-        if (m != string::npos && isIntegal)
+        if (m != string::npos && is_int)
         {
             vector<string> vs = TC_Common::sepstr<string>(nv, "-");
             if (vs.size() == 2)
@@ -323,10 +323,10 @@ namespace bm
         return nv;
     }
 
-    int tarsProtocol::encode(TarsOutputStream<BufferWriter> &os, const string& sType, const string& sVal, int tag, bool usigned)
+    int tarsProtocol::encode(TarsOutputStream<BufferWriter> &os, const string& stype, const string& sval, int tag, bool usigned)
     {
-        string type = TC_Common::trim(sType);
-        string val  = TC_Common::trim(sVal);
+        string type = TC_Common::trim(stype);
+        string val  = TC_Common::trim(sval);
         if (type.find(PT_VOID) == 0)
         {
             return 0;
