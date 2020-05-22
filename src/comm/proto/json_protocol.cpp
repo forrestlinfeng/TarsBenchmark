@@ -49,23 +49,24 @@ namespace bm
         {                                                           \
             JsonInput::readJson(val, v, false);                     \
         }                                                           \
-        os.write(val, f.tag);                                      	\
+        os.write(val, f.tag);                                       \
+        return 0;                                                   \
     }
 
     #define READNUM(st, vt, vt2, f, fv) if(f.type.find(st) == 0)    \
     {                                                               \
-		if (f.usigned)												\
-		{                                                       	\
-			vt2 tmp = 0;                                      		\
-			is.read(tmp, f.tag, false);                         	\
-			return new JsonValueNum(tmp, fv);     		            \
-		}                                                       	\
-		else                                                    	\
-		{                                                       	\
-			vt tmp = 0;                                           	\
-			is.read(tmp, f.tag, false);                         	\
-			return new JsonValueNum(tmp, fv);     		            \
-		}															\
+        if (f.usigned)                                              \
+        {                                                           \
+            vt2 tmp = 0;                                            \
+            is.read(tmp, f.tag, false);                             \
+            return new JsonValueNum(tmp, fv);                       \
+        }                                                           \
+        else                                                        \
+        {                                                           \
+            vt tmp = 0;                                             \
+            is.read(tmp, f.tag, false);                             \
+            return new JsonValueNum(tmp, fv);                       \
+        }                                                           \
     }
 
     IMPLEMENT_DYNCREATE(jsonProtocol, jsonProtocol)
