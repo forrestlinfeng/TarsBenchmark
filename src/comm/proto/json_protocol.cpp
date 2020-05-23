@@ -85,6 +85,16 @@ namespace bm
         try
         {
             string file_pre = LICODE_GETSTR("-C", _function);
+            if (!TC_File::isFileExist(file_pre + ".desc"))
+            {
+                licote_option_help("interface description file not exist\n");
+            }
+            
+            if (!TC_File::isFileExist(file_pre + ".case"))
+            {
+                licote_option_help("interface json case file not exist\n");
+            }
+
             parseCase(TC_File::load2str(file_pre + ".desc"), TC_File::load2str(file_pre + ".case"));
         }
         catch (exception& e)

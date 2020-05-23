@@ -61,6 +61,7 @@ int AdminImp::check(const BenchmarkUnit& req, TaskConf &conf, int timeout)
     }
     catch (exception& e)
     {
+        FDLOG("error") << __FUNCTION__ << "|" << e.what() << endl;
         return BM_ADMIN_ERR_PROTO;
     }
     return BM_SUCC;

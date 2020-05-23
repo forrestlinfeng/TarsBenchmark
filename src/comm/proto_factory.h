@@ -44,6 +44,7 @@ namespace bm
                 {
                     throw runtime_error("null protocol:" + name);
                 }
+                _protos[name] = obj;
             }
 
             if ((cmd = dynamic_cast<Protocol*>(_protos[name])) == NULL)
