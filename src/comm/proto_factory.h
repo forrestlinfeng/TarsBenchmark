@@ -29,7 +29,7 @@ namespace bm
         ProtoFactory() { _protos.clear(); }
         virtual ~ProtoFactory() { destroyObject(); }
 
-        Protocol* get(const string& name, int argc, char** argv)
+        Protocol* get(const string& name)
         {
             Protocol* cmd = NULL;
             if (_protos.find(name) == _protos.end())
@@ -44,13 +44,6 @@ namespace bm
                 {
                     throw runtime_error("null protocol:" + name);
                 }
-
-                if (argc > 0 && argv != NULL)
-                {
-                    cmd->initialize(argc, argv);
-                }
-
-                _protos[name] = obj;
             }
 
             if ((cmd = dynamic_cast<Protocol*>(_protos[name])) == NULL)
