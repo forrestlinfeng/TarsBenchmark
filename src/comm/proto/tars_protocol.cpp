@@ -19,20 +19,6 @@
 
 namespace bm
 {
-    const string PT_VOID    = "void";
-    const string PT_BOOLEAN = "bool";
-    const string PT_BYTE    = "byte";
-    const string PT_SHORT   = "short";
-    const string PT_INT     = "int";
-    const string PT_LONG    = "long";
-    const string PT_FLOAT   = "float";
-    const string PT_DOUBLE  = "double";
-    const string PT_STRING  = "string";
-    const string PT_VECTOR  = "vector";
-    const string PT_MAP     = "map";
-    const string PT_STRUCT  = "struct";
-    const string PT_UNSIGNED = "unsigned";
-
     IMPLEMENT_DYNCREATE(tarsProtocol, tarsProtocol)
 
     int tarsProtocol::initialize(int argc, char** argv)
@@ -144,10 +130,8 @@ namespace bm
 
     string tarsProtocol::getMapKey(const string& type)
     {
+        int j = 0, p = 0;
         string s = getType(type);
-        int j = 0;
-        int p = 0;
-
         for (int i = 0; i < (int)s.size(); ++i)
         {
             if(s.at(i) == '<')
@@ -174,10 +158,9 @@ namespace bm
 
     Field tarsProtocol::getField(const string& type, int tag, bool require)
     {
-        Field field;
         int p = 0;
+        Field field;
         string short_type("");
-
         for (int i = 0; i < (int)type.size(); ++i)
         {
             if (type.at(i) == '<')
@@ -199,15 +182,15 @@ namespace bm
         if (attr.size() == 3)
         {
             int attr_tag = TC_Common::strto<int>(attr[0]);
-            field.tag_ = (attr_tag == 0 ? tag : attr_tag);
-            field.require_ = (string("require").compare(attr[1]) == 0 ? true : false);
-            field.type_ = (attr[2] + short_type);
+            field.tag = (attr_tag == 0 ? tag : attr_tag);
+            field.type = (attr[2] + short_type);
+            field.require = (string("require").compare(attr[1]) == 0 ? true : false);
         }
         else
         {
-            field.tag_ = tag;
-            field.require_ = require;
-            field.type_ = type;
+            field.tag = tag;
+            field.type = type;
+            field.require = require;
         }
         return field;
     }
@@ -452,8 +435,8 @@ namespace bm
             for (int i = 0, ttag = 0; i < (int)vt.size(); ++i)
             {
                 Field field = getField(vt.at(i), ttag, true);
-                encode(os, field.type_, vv.at(i), field.tag_, false);
-                ttag = field.tag_ + 1;
+                encode(os, field.type, vv.at(i), field.tag, false);
+                ttag = field.tag + 1;
             }
             TarsWriteToHead(os, TarsHeadeStructEnd, 0);
         }
@@ -544,7 +527,6 @@ namespace bm
         }
         return 0;
     }
-
 
     string tarsProtocol::decode(TarsInputStream<BufferReader> &is, const string& sType, int tag, bool require, bool usigned)
     {
@@ -726,10 +708,9 @@ namespace bm
                     {
                         string type_desc = vt.at(i);
                         Field field = getField(type_desc, struct_tag, require);
-                        struct_tag = field.tag_;
-                        string tmp = decode(is, field.type_, struct_tag, field.require_, false);
+                        string tmp = decode(is, field.type, field.tag, field.require, false);
                         s += tmp + ((i != int(vt.size() - 1)) ? "," : ">");
-                        struct_tag++;
+                        struct_tag = field.tag + 1;
                     }
                     is.skipToStructEnd();
                 }

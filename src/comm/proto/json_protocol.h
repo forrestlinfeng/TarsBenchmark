@@ -133,8 +133,8 @@ namespace bm
         /**
          * @brief  解析测试用例
          *
-         * @param in_param      用例参数
-         * @param in_value      用例内容
+         * @param in_param  用例参数
+         * @param in_value  用例内容
          *
          * @return 0成功, 其他失败
          */
@@ -153,19 +153,18 @@ namespace bm
         /**
          * @brief  生成取随机内容
          *
-         * @param v  最小值
-         * @param is_int  最大值
+         * @param v string内容
+         * @param is_int    是否整形数据
          *
          * @return string 随机值内容
          */
         string genRandomValue(const string& v, bool is_int = true);
     public:
-        int                     _timeout;
-        string                  _servant;
-        string                  _function;
-        JsonValueObjPtr         _para_value;
-        vector<JsonField>       _para_field;
-        vector<JsonField>       _out_field;
+        int                     _timeout;       // 超时时间
+        string                  _servant;       // servant名称
+        string                  _function;      // rpc函数
+        JsonValueObjPtr         _para_value;    // 输入参数
+        vector<JsonField>       _para_field;    // 参数配置
     };
 };
 #endif

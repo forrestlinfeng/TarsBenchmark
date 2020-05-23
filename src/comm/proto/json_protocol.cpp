@@ -22,20 +22,6 @@
 
 namespace bm
 {
-    const string PT_VOID    = "void";
-    const string PT_BOOLEAN = "bool";
-    const string PT_BYTE    = "byte";
-    const string PT_SHORT   = "short";
-    const string PT_INT     = "int";
-    const string PT_LONG    = "long";
-    const string PT_FLOAT   = "float";
-    const string PT_DOUBLE  = "double";
-    const string PT_STRING  = "string";
-    const string PT_VECTOR  = "vector";
-    const string PT_MAP     = "map";
-    const string PT_STRUCT  = "struct";
-    const string PT_UNSIGNED = "unsigned";
-
     #define WRITENUM(st, vt, f, v) if(f.type.find(st) == 0)         \
     {                                                               \
         string s;                                                   \
@@ -440,7 +426,7 @@ namespace bm
         return (long)(rand() % (max - min + 1) + min);
     }
 
-    string jsonProtocol::genRandomValue(const string& v, bool isIntegal)
+    string jsonProtocol::genRandomValue(const string& v, bool is_int)
     {
         string::size_type l = v.find_first_of('[');
         string::size_type r = v.find_last_of(']');
@@ -457,7 +443,7 @@ namespace bm
             return nv;
         }
 
-        if (m != string::npos && isIntegal)
+        if (m != string::npos && is_int)
         {
             vector<string> vs = TC_Common::sepstr<string>(nv, "-");
             if (vs.size() == 2)
@@ -479,11 +465,11 @@ namespace bm
 
     int jsonProtocol::input(const char *buf, size_t len)
     {
-        size_t iHeaderLen = ntohl(*(uint32_t *)(buf));
-        if ((size_t)len < sizeof(uint32_t) || iHeaderLen < sizeof(int) || len < iHeaderLen)
+        size_t head_len = ntohl(*(uint32_t *)(buf));
+        if ((size_t)len < sizeof(uint32_t) || head_len < sizeof(int) || len < head_len)
         {
             return 0;
         }
-        return (int)iHeaderLen;
+        return (int)head_len;
     }
 };

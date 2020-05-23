@@ -44,7 +44,7 @@ namespace bm
          *
          * @return 0成功, 其他失败
          */
-        virtual int initialize(const vector<string>& params) = 0;
+        virtual int initialize(const vector<string>& params) { return 0; }
 
         /**
          * @brief  协议是否支持有序的
