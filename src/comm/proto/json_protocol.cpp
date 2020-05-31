@@ -348,10 +348,14 @@ namespace bm
         ostringstream oss;
         try
         {
-            TarsOutputStream<BufferWriter> os, os_;
-            for (auto& field : _para_field)
+            TarsOutputStream<BufferWriter> os;
+            if (_random_flag == true)
             {
-                encode(os, field, _para_value->value[field.name]);
+                _os.reset();
+                for (auto &field : _para_field)
+                {
+                    encode(_os, field, _para_value->value[field.name]);
+                }
             }
 
             RequestPacket req;
@@ -363,18 +367,18 @@ namespace bm
             req.sFuncName    = _function;
             req.context["AppName"] = "bmClient";
             req.status["AppName"] = "bmClient";
-            req.sBuffer = os.getByteBuffer();
-            req.writeTo(os_);
+            req.sBuffer = _os.getByteBuffer();
+            req.writeTo(os);
 
-            if ((size_t)len < (os_.getLength() + 4))
+            if ((size_t)len < (os.getLength() + 4))
             {
-                return os_.getLength() + 4;
+                return os.getLength() + 4;
             }
 
-            len = sizeof(Int32) + os_.getLength();
-            Int32 iHeaderLen = htonl(sizeof(Int32) + os_.getLength());
+            len = sizeof(Int32) + os.getLength();
+            Int32 iHeaderLen = htonl(sizeof(Int32) + os.getLength());
             memcpy(buf, &iHeaderLen, sizeof(Int32));
-            memcpy(buf + sizeof(Int32), os_.getBuffer(), os_.getLength());
+            memcpy(buf + sizeof(Int32), os.getBuffer(), os.getLength());
             return 0;
         }
         catch (exception& e)
@@ -417,50 +421,6 @@ namespace bm
         cerr << __FILE__ << ":" << __LINE__ << "|" << oss.str() << endl;
 #endif
         return BM_PACKET_DECODE;
-    }
-
-    long jsonProtocol::genRandomValue(const string& range_min, const string& range_max)
-    {
-        long max = TC_Common::strto<long>(range_max);
-        long min = TC_Common::strto<long>(range_min);
-        return (long)(rand() % (max - min + 1) + min);
-    }
-
-    string jsonProtocol::genRandomValue(const string& v, bool is_int)
-    {
-        string::size_type l = v.find_first_of('[');
-        string::size_type r = v.find_last_of(']');
-        if (l == string::npos || r == string::npos)
-        {
-            return v;
-        }
-
-        string nv = v.substr(l + 1, r - l - 1);
-        string::size_type m = v.find_first_of('-');
-        string::size_type n = v.find_first_of(',');
-        if (m == string::npos && n == string::npos)
-        {
-            return nv;
-        }
-
-        if (m != string::npos && is_int)
-        {
-            vector<string> vs = TC_Common::sepstr<string>(nv, "-");
-            if (vs.size() == 2)
-            {
-                return TC_Common::tostr(genRandomValue(vs.at(0), vs.at(1)));
-            }
-            throw runtime_error("invalid randval(-)");
-        }
-        else if (n != string::npos)
-        {
-            vector<string> vs = TC_Common::sepstr<string>(nv, ",");
-            if (vs.size() > 1)
-            {
-                return vs[(size_t)rand() % vs.size()];
-            }
-        }
-        return nv;
     }
 
     int jsonProtocol::input(const char *buf, size_t len)

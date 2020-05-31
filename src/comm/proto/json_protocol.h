@@ -48,7 +48,7 @@ namespace bm
     {
         DECLARE_DYNCREATE(jsonProtocol)
     public:
-        jsonProtocol() {}
+        jsonProtocol() { _random_flag = false; }
         virtual ~jsonProtocol() {}
         /**
          * @brief  协议初始化函数
@@ -129,6 +129,7 @@ namespace bm
          * @return Field结构
          */
         void parseField(JsonValueObjPtr ptr, vector<JsonField>& field, int elem_num = -1);
+        
     private:
         /**
          * @brief  解析测试用例
@@ -139,32 +140,13 @@ namespace bm
          * @return 0成功, 其他失败
          */
         int parseCase(const string& in_param, const string& in_value);
-
-        /**
-         * @brief  生成取随机内容
-         *
-         * @param rmin  最小值
-         * @param rmax  最大值
-         *
-         * @return long 随机值
-         */
-        long genRandomValue(const string& rmin, const string& rmax);
-
-        /**
-         * @brief  生成取随机内容
-         *
-         * @param v string内容
-         * @param is_int    是否整形数据
-         *
-         * @return string 随机值内容
-         */
-        string genRandomValue(const string& v, bool is_int = true);
     public:
         int                     _timeout;       // 超时时间
         string                  _servant;       // servant名称
         string                  _function;      // rpc函数
         JsonValueObjPtr         _para_value;    // 输入参数
         vector<JsonField>       _para_field;    // 参数配置
+        TarsOutputStream<BufferWriter> _os;
     };
 };
 #endif

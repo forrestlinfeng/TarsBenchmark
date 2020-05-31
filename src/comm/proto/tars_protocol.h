@@ -42,7 +42,7 @@ namespace bm
     {
         DECLARE_DYNCREATE(tarsProtocol)
     public:
-        tarsProtocol() {}
+        tarsProtocol() { _random_flag = false; }
         virtual ~tarsProtocol() {}
         /**
          * @brief  协议初始化函数
@@ -147,26 +147,6 @@ namespace bm
         string getMapValue(const string& type);
 
         /**
-         * @brief  生成取随机内容
-         *
-         * @param rmin  最小值
-         * @param rmax  最大值
-         *
-         * @return long 随机值
-         */
-        long genRandomValue(const string& rmin, const string& rmax);
-
-        /**
-         * @brief  生成取随机内容
-         *
-         * @param v     string内容
-         * @param is_int    是否整形数据
-         *
-         * @return string 随机值内容
-         */
-        string genRandomValue(const string& v, bool is_int = true);
-
-        /**
          * @brief  解析测试用例
          *
          * @param in_param  用例参数
@@ -200,6 +180,7 @@ namespace bm
         string          _function;      // rpc函数
         vector<string>  _para_vals;     // 输入参数
         vector<string>  _para_list;     // 参数配置  
+        TarsOutputStream<BufferWriter> _os;
     };
 };
 #endif

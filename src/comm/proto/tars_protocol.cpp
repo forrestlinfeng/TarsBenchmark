@@ -103,7 +103,7 @@ namespace bm
     int tarsProtocol::parseCase(const string& in_param, const string& in_value)
     {
         _para_list = TC_Common::sepstr<string>(in_param, "|");
-        _para_vals = TC_Common::sepstr<string>(in_value, "\n");
+        _para_vals = TC_Common::sepstr<string>(escapeStr(in_value), "\n");
         if (_para_vals.size() !=  _para_list.size())
         {
             throw runtime_error("case parameter not match");
@@ -287,51 +287,6 @@ namespace bm
         return vs;
     }
 
-    long tarsProtocol::genRandomValue(const string& rmin, const string& rmax)
-    {
-        long max = TC_Common::strto<long>(rmax);
-        long min = TC_Common::strto<long>(rmin);
-        return (long)(rand() % (max - min + 1) + min);
-    }
-
-    string tarsProtocol::genRandomValue(const string& v, bool is_int)
-    {
-        string vv = unescapeStr(v);
-        string::size_type l = vv.find_first_of('[');
-        string::size_type r = vv.find_last_of(']');
-        if (l == string::npos || r == string::npos)
-        {
-            return vv;
-        }
-
-        string nv = vv.substr(l + 1, r - l - 1);
-        string::size_type m = vv.find_first_of('-');
-        string::size_type n = vv.find_first_of(',');
-        if (m == string::npos && n == string::npos)
-        {
-            return nv;
-        }
-
-        if (m != string::npos && is_int)
-        {
-            vector<string> vs = TC_Common::sepstr<string>(nv, "-");
-            if (vs.size() == 2)
-            {
-                return TC_Common::tostr(genRandomValue(vs.at(0), vs.at(1)));
-            }
-            throw runtime_error("invalid randval(-)");
-        }
-        else if (n != string::npos)
-        {
-            vector<string> vs = TC_Common::sepstr<string>(nv, ",");
-            if (vs.size() > 1)
-            {
-                return vs[(size_t)rand() % vs.size()];
-            }
-        }
-        return nv;
-    }
-
     int tarsProtocol::encode(TarsOutputStream<BufferWriter> &os, const string& stype, const string& sval, int tag, bool usigned)
     {
         string type = TC_Common::trim(stype);
@@ -395,7 +350,7 @@ namespace bm
         }
         else if (type.find(PT_STRING) == 0)
         {
-            os.write(genRandomValue(val, false), tag);
+            os.write(genRandomValue(unescapeStr(val), false), tag);
         }
         else if (type.find(PT_VECTOR) == 0)
         {
@@ -724,15 +679,19 @@ namespace bm
         ostringstream oss;
         try
         {
+            TarsOutputStream<BufferWriter> os;
             if (_para_list.size() != _para_vals.size())
             {
                 return BM_PACKET_PARAM;
             }
 
-            TarsOutputStream<BufferWriter> os, os_;
-            for (size_t ii = 0; ii < _para_list.size(); ii++)
+            if (_random_flag)
             {
-                encode(os, _para_list[ii], escapeStr(_para_vals[ii]), ii + 1);
+                _os.reset();
+                for (size_t ii = 0; ii < _para_list.size(); ii++)
+                {
+                    encode(_os, _para_list[ii], _para_vals[ii], ii + 1);
+                }
             }
 
             RequestPacket req;
@@ -744,18 +703,18 @@ namespace bm
             req.sFuncName    = _function;
             req.context["AppName"] = "bmClient";
             req.status["AppName"] = "bmClient";
-            req.sBuffer = os.getByteBuffer();
-            req.writeTo(os_);
+            req.sBuffer = _os.getByteBuffer();
+            req.writeTo(os);
 
-            if ((size_t)len < (os_.getLength() + 4))
+            if ((size_t)len < (os.getLength() + 4))
             {
-                return os_.getLength() + 4;
+                return os.getLength() + 4;
             }
 
-            len = sizeof(Int32) + os_.getLength();
-            Int32 iHeaderLen = htonl(sizeof(Int32) + os_.getLength());
+            len = sizeof(Int32) + os.getLength();
+            Int32 iHeaderLen = htonl(sizeof(Int32) + os.getLength());
             memcpy(buf, &iHeaderLen, sizeof(Int32));
-            memcpy(buf + sizeof(Int32), os_.getBuffer(), os_.getLength());
+            memcpy(buf + sizeof(Int32), os.getBuffer(), os.getLength());
             return 0;
         }
         catch (exception& e)
