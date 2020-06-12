@@ -37,3 +37,18 @@ Sample
   -n(optional)         maximum process
 ```
 See details in [develop.md](https://github.com/TarsCloud/TarsDocs_en/blob/master/benchmark/develop.md)
+
+## Quick Start
+
+The online benchmark service can be implemented with the latest version of [TarsWeb](https://github.com/TarsCloud/TarsWeb). release steps are as follows:
+```shell
+./install.sh webhost token adminsip nodeip
+```
+Description:
+```text
+webhost                  Host or ip:port on the TarsWeb management side
+token                    Which can obtain the http://webhost/auth.html#/token through the management side
+adminsip                 The IP address of the AdminServer deployment, it must be deployed at a single point. It is recommended to deploy together with tarsregistry.。
+nodeip                   The IP address of the NodeServer deployment, it should be separated from the AdminServer
+```
+NodeServer is recommended to expand the capacity on the management side. The more machines deployed, the stronger the ability to support parallel benchmark.
