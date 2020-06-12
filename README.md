@@ -50,7 +50,7 @@ Description:
 ```text
 webhost                  Host or ip:port on the TarsWeb management side
 token                    Which can obtain the http://webhost/auth.html#/token through the management side
-adminsip                 The IP address of the AdminServer deployment, it must be deployed at a single point. It is recommended to deploy together with tarsregistry.。
+adminsip                 The IP address of the AdminServer deployment, it must be deployed at a single point
 nodeip                   The IP address of the NodeServer deployment, it should be separated from the AdminServer
 ```
-**NodeServer** is recommended to expand the capacity on the management side. The more machines deployed, the stronger the ability to support parallel benchmark.
+**AdminServer** is recommended to deploy together with tarsregistry, **NodeServer** is recommended to expand the capacity on the management side. The more machines deployed, the stronger the ability to support parallel benchmark.
